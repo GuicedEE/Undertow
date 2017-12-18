@@ -1,11 +1,11 @@
 package za.co.mmagon.jwebswing.undertow;
 
-import com.armineasy.injection.GuiceContext;
 import com.google.inject.servlet.GuiceFilter;
 import io.undertow.server.handlers.resource.ClassPathResourceManager;
 import io.undertow.servlet.ServletExtension;
 import io.undertow.servlet.api.DeploymentInfo;
 import io.undertow.servlet.api.FilterInfo;
+import za.co.mmagon.guiceinjection.GuiceContext;
 import za.co.mmagon.logger.LogFactory;
 
 import javax.servlet.DispatcherType;
