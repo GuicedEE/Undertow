@@ -20,6 +20,7 @@ public class UndertowJWebSwingHandlerExtension implements ServletExtension
 	public void handleDeployment(DeploymentInfo deploymentInfo, ServletContext servletContext)
 	{
 		log.config("Registering JWebSwing in undertow");
+
 		deploymentInfo.addFilter(new FilterInfo("GuiceFilter", GuiceFilter.class));
 		deploymentInfo.addFilterUrlMapping("GuiceFilter", "/*", DispatcherType.REQUEST);
 		deploymentInfo.setResourceManager(new ClassPathResourceManager(deploymentInfo.getClassLoader(), "META-INF/resources"));
