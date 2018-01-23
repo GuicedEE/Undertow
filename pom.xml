@@ -3,17 +3,17 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>za.co.mmagon</groupId>
-    <artifactId>jwebswing-atmospherepush-undertow</artifactId>
+    <artifactId>jwebswing-undertow</artifactId>
     <version>0.0.0_0</version>
     <packaging>jar</packaging>
 
-    <name>Atmopshere Push Undertow</name>
+    <name>JWebSwing Undertow</name>
     <description>Allows instant atmopshere push usage in Embedded Containers mainly Undertow, and Undertow-Enabled such as JBoss, EAP, Jersey etc.</description>
 
-    <url>https://github.com/GedMarc/JWebSwing-Atmopshere-Undertow</url>
+    <url>https://github.com/GedMarc/JWebSwing-Undertow</url>
 	<issueManagement>
         <system>Github</system>
-        <url>https://github.com/GedMarc/JWebSwing-Atmosphere-Undertow/issues</url>
+        <url>https://github.com/GedMarc/JWebSwing-Undertow/issues</url>
     </issueManagement>
 
     <repositories>
