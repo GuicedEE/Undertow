@@ -69,13 +69,6 @@
             <artifactId>jwebswing</artifactId>
             <version>${project.version}</version>
         </dependency>
-
-        <dependency>
-            <groupId>za.co.mmagon</groupId>
-            <artifactId>jwebswing-atmosphere</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
         <dependency>
             <groupId>io.undertow</groupId>
             <artifactId>undertow-websockets-jsr</artifactId>
