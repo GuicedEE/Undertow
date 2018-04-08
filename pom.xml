@@ -11,7 +11,7 @@
     <description>Allows instant atmopshere push usage in Embedded Containers mainly Undertow, and Undertow-Enabled such as JBoss, EAP, Jersey etc.</description>
 
     <url>https://github.com/GedMarc/JWebSwing-Undertow</url>
-	<issueManagement>
+    <issueManagement>
         <system>Github</system>
         <url>https://github.com/GedMarc/JWebSwing-Undertow/issues</url>
     </issueManagement>
@@ -107,7 +107,7 @@
     </distributionManagement>
     <organization>
         <name>Marc Magon</name>
-        <url>http://jwebswing.com</url>
+        <url>http://jwebmp.com</url>
     </organization>
     <scm>
         <url>https://github.com/GedMarc?tab=repositories</url>
@@ -115,7 +115,7 @@
     </scm>
     <ciManagement>
         <system>TeamCity</system>
-        <url>http://jwebswing.com/teamcity</url>
+        <url>http://jwebmp.com/teamcity</url>
     </ciManagement>
     <reporting>
         <plugins>
