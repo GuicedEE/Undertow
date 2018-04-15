@@ -3,8 +3,8 @@
  
 ```
 <dependency>
-    <groupId>za.co.mmagon</groupId>
-    <artifactId>jwebswing-undertow</artifactId>
+    <groupId>com.jwebmp</groupId>
+    <artifactId>jwebmp-undertow</artifactId>
     <version>LATEST</version>
 </dependency>
 ``` 
