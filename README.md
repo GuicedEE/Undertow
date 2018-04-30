@@ -1,5 +1,5 @@
-# JWebSwing Undertow
- This library plugs JWebSwing into Undertow enabled platforms, including stand-alone, JBoss, Wildfly, and EAP.
+# JWebMP Undertow
+ This library plugs JWebMP into Undertow enabled platforms, including stand-alone, JBoss, Wildfly, and EAP.
  
 ```
 <dependency>
