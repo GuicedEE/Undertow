@@ -18,18 +18,19 @@
 package com.jwebmp.undertow;
 
 import com.google.inject.servlet.GuiceFilter;
+import com.jwebmp.logger.LogFactory;
 import io.undertow.server.handlers.resource.ClassPathResourceManager;
 import io.undertow.servlet.ServletExtension;
 import io.undertow.servlet.api.DeploymentInfo;
 import io.undertow.servlet.api.FilterInfo;
-import za.co.mmagon.logger.LogFactory;
 
 import javax.servlet.DispatcherType;
 import javax.servlet.ServletContext;
 import java.util.logging.Logger;
 
 @SuppressWarnings("unused")
-public class UndertowJWebSwingHandlerExtension implements ServletExtension
+public class UndertowJWebSwingHandlerExtension
+		implements ServletExtension
 {
 	private static final Logger log = LogFactory.getLog("JwebSwingUndertow");
 
