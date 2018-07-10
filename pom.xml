@@ -2,16 +2,20 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.jwebmp</groupId>
+
+    <parent>
+        <groupId>com.jwebmp</groupId>
+        <artifactId>jwebmp-bom</artifactId>
+        <version>0.0.0_0-SNAPSHOT</version>
+    </parent>
+
     <artifactId>jwebmp-undertow</artifactId>
-    <version>0.0.0_0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>JWebSwing Undertow</name>
     <description>Allows instant atmopshere push usage in Embedded Containers mainly Undertow, and Undertow-Enabled such as JBoss, EAP, Jersey etc.</description>
 
     <url>https://github.com/GedMarc/JWebSwing-Undertow</url>
-
 
     <licenses>
         <license>
@@ -26,53 +30,6 @@
         <url>https://github.com/GedMarc/JWebSwing-Undertow/issues</url>
     </issueManagement>
 
-    <repositories>
-
-        <repository>
-            <id>jwebmp-snapshot</id>
-            <name>JWebMPArtifactory-snapshots</name>
-            <url>https://jwebmp.com/artifactory/libs-snapshot</url>
-        </repository>
-    </repositories>
-
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <src.dir>src</src.dir>
-        <test.dir>test</test.dir>
-        <maven.jar.version>3.0.2</maven.jar.version>
-        <maven.dependency.version>3.0.1</maven.dependency.version>
-        <maven.javadoc.version>2.10.4</maven.javadoc.version>
-        <maven.source.version>2.1.2</maven.source.version>
-        <maven.resources.version>3.0.2</maven.resources.version>
-        <netbeans.hint.license>gpl30</netbeans.hint.license>
-        <license.dir>${basedir}</license.dir>
-
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-        <sonar.host.url>https://jwebmp.com/sonar</sonar.host.url>
-        <sonar.exclusions>**bower_components</sonar.exclusions>
-    </properties>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.sonarsource.scanner.maven</groupId>
-                <artifactId>sonar-maven-plugin</artifactId>
-                <version>3.3.0.603</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <version>2.7</version>
-            </plugin>
-            <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.7.9</version>
-            </plugin>
-        </plugins>
-    </build>
-
     <dependencies>
         <dependency>
             <groupId>com.jwebmp</groupId>
@@ -83,47 +40,28 @@
         <dependency>
             <groupId>io.undertow</groupId>
             <artifactId>undertow-websockets-jsr</artifactId>
-            <version>1.4.21.Final</version>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>io.undertow</groupId>
             <artifactId>undertow-core</artifactId>
-            <version>1.4.21.Final</version>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>io.undertow</groupId>
             <artifactId>undertow-servlet</artifactId>
-            <version>1.4.21.Final</version>
-            <scope>provided</scope>
         </dependency>
-
     </dependencies>
-
-    <distributionManagement>
-        <snapshotRepository>
-            <id>snapshot</id>
-            <name>JWebMPArtifactory-snapshots</name>
-            <url>https://jwebmp.com/artifactory/libs-snapshot-local</url>
-        </snapshotRepository>
-        <repository>
-            <id>central</id>
-            <name>JWebMPArtifactory-releases</name>
-            <url>https://jwebmp.com/artifactory/libs-release-local</url>
-        </repository>
-    </distributionManagement>
 
     <organization>
         <name>Marc Magon</name>
         <url>http://jwebmp.com</url>
     </organization>
+
     <scm>
-        <url>https://github.com/GedMarc?tab=repositories</url>
-        <developerConnection>Marc Magon</developerConnection>
+        <url>https://github.com/GedMarc/JWebMP-Undertow.git</url>
     </scm>
+
     <ciManagement>
         <system>TeamCity</system>
         <url>http://jwebmp.com/teamcity</url>

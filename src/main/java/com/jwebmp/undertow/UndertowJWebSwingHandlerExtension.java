@@ -37,12 +37,13 @@ public class UndertowJWebSwingHandlerExtension
 	@Override
 	public void handleDeployment(DeploymentInfo deploymentInfo, ServletContext servletContext)
 	{
-		log.config("Registering JWebSwing in undertow");
+		log.config("Registering JWebMP in undertow");
 
 		deploymentInfo.addFilter(new FilterInfo("GuiceFilter", GuiceFilter.class).setAsyncSupported(true));
 		deploymentInfo.addFilterUrlMapping("GuiceFilter", "/*", DispatcherType.REQUEST);
+		log.config("Resources are found in META-INF/resources");
 		deploymentInfo.setResourceManager(new ClassPathResourceManager(deploymentInfo.getClassLoader(), "META-INF/resources"));
 
-		log.config("Completed Registering JWebSwing in undertow");
+		log.config("Completed Registering JWebMP in undertow");
 	}
 }
