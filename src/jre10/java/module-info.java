@@ -12,4 +12,5 @@ module com.jwebmp.undertow
 	requires java.logging;
 
 	provides io.undertow.servlet.ServletExtension with UndertowJWebSwingHandlerExtension;
+	opens com.jwebmp.undertow;
 }

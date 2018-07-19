@@ -34,6 +34,10 @@ public class UndertowJWebSwingHandlerExtension
 {
 	private static final Logger log = LogFactory.getLog("JwebSwingUndertow");
 
+	public UndertowJWebSwingHandlerExtension()
+	{
+	}
+
 	@Override
 	public void handleDeployment(DeploymentInfo deploymentInfo, ServletContext servletContext)
 	{
