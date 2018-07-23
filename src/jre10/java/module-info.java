@@ -1,4 +1,4 @@
-import com.jwebmp.undertow.UndertowJWebSwingHandlerExtension;
+import com.jwebmp.undertow.UndertowJWebMPHandlerExtension;
 
 module com.jwebmp.undertow
 {
@@ -11,6 +11,6 @@ module com.jwebmp.undertow
 	requires javax.servlet.api;
 	requires java.logging;
 
-	provides io.undertow.servlet.ServletExtension with UndertowJWebSwingHandlerExtension;
+	provides io.undertow.servlet.ServletExtension with UndertowJWebMPHandlerExtension;
 	opens com.jwebmp.undertow;
 }

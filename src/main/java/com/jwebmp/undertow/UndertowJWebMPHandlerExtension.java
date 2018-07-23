@@ -29,12 +29,12 @@ import javax.servlet.ServletContext;
 import java.util.logging.Logger;
 
 @SuppressWarnings("unused")
-public class UndertowJWebSwingHandlerExtension
+public class UndertowJWebMPHandlerExtension
 		implements ServletExtension
 {
-	private static final Logger log = LogFactory.getLog("JwebSwingUndertow");
+	private static final Logger log = LogFactory.getLog("JWebMPUndertow");
 
-	public UndertowJWebSwingHandlerExtension()
+	public UndertowJWebMPHandlerExtension()
 	{
 	}
 
