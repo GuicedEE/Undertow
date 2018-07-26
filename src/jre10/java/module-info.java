@@ -15,6 +15,11 @@ module com.jwebmp.undertow
 	requires xnio.api;
 	requires undertow.websockets.jsr;
 	requires com.jwebmp.websockets;
+	requires com.google.common;
+	requires com.google.guice;
+	requires javax.inject;
+	requires com.jwebmp.guicedinjection;
+	requires com.jwebmp.core;
 
 	provides io.undertow.servlet.ServletExtension with UndertowJWebMPHandlerExtension;
 	provides IJWebMPWebSocketPreConfiguration with JWebMPUndertowWebSocketConfiguration;
