@@ -18,11 +18,15 @@
 package com.jwebmp.undertow;
 
 import com.google.inject.servlet.GuiceFilter;
+import com.jwebmp.guicedservlets.GuicedServletContextListener;
+import com.jwebmp.guicedservlets.GuicedServletSessionManager;
 import com.jwebmp.logger.LogFactory;
 import io.undertow.server.handlers.resource.ClassPathResourceManager;
 import io.undertow.servlet.ServletExtension;
+import io.undertow.servlet.Servlets;
 import io.undertow.servlet.api.DeploymentInfo;
 import io.undertow.servlet.api.FilterInfo;
+import io.undertow.servlet.api.ListenerInfo;
 
 import javax.servlet.DispatcherType;
 import javax.servlet.ServletContext;
@@ -48,6 +52,8 @@ public class UndertowJWebMPHandlerExtension
 			log.fine("Registering Guice Filter in Undertow");
 			deploymentInfo.addFilter(new FilterInfo("GuiceFilter", GuiceFilter.class).setAsyncSupported(true));
 			deploymentInfo.addFilterUrlMapping("GuiceFilter", "/*", DispatcherType.REQUEST);
+			deploymentInfo.addListener(new ListenerInfo(GuicedServletSessionManager.class));
+			deploymentInfo.addListener(Servlets.listener(GuicedServletSessionManager.class));
 		}
 		else
 		{

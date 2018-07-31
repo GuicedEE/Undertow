@@ -1,6 +1,7 @@
 import com.jwebmp.undertow.JWebMPUndertowWebSocketConfiguration;
 import com.jwebmp.undertow.UndertowJWebMPHandlerExtension;
-import com.jwebmp.websockets.services.IJWebMPWebSocketPreConfiguration;
+import com.jwebmp.undertow.UndertowWebSocketSessionProvider;
+import com.jwebmp.websockets.services.IWebSocketPreConfiguration;
 
 module com.jwebmp.undertow
 {
@@ -20,9 +21,11 @@ module com.jwebmp.undertow
 	requires javax.inject;
 	requires com.jwebmp.guicedinjection;
 	requires com.jwebmp.core;
+	requires com.jwebmp.guicedservlets;
 
 	provides io.undertow.servlet.ServletExtension with UndertowJWebMPHandlerExtension;
-	provides IJWebMPWebSocketPreConfiguration with JWebMPUndertowWebSocketConfiguration;
+	provides IWebSocketPreConfiguration with JWebMPUndertowWebSocketConfiguration;
+	provides com.jwebmp.websockets.services.IWebSocketSessionProvider with UndertowWebSocketSessionProvider;
 
 	opens com.jwebmp.undertow;
 }

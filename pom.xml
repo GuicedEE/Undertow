@@ -31,6 +31,14 @@
         </dependency>
         <dependency>
             <groupId>com.jwebmp</groupId>
+            <artifactId>guiced-injection</artifactId>
+            <version>${project.version}</version>
+            <classifier>${jwebmp.runtime.classifier}</classifier>
+            <type>jar</type>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>com.jwebmp</groupId>
             <artifactId>jwebmp-websockets</artifactId>
             <version>${project.version}</version>
             <classifier>${jwebmp.runtime.classifier}</classifier>
