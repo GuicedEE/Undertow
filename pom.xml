@@ -27,7 +27,6 @@
             <version>${project.version}</version>
             <classifier>${jwebmp.runtime.classifier}</classifier>
             <type>jar</type>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>com.jwebmp</groupId>
@@ -35,7 +34,6 @@
             <version>${project.version}</version>
             <classifier>${jwebmp.runtime.classifier}</classifier>
             <type>jar</type>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>com.jwebmp</groupId>
@@ -43,7 +41,6 @@
             <version>${project.version}</version>
             <classifier>${jwebmp.runtime.classifier}</classifier>
             <type>jar</type>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>com.jwebmp</groupId>
@@ -51,7 +48,6 @@
             <version>${project.version}</version>
             <classifier>${jwebmp.runtime.classifier}</classifier>
             <type>jar</type>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>com.jwebmp</groupId>
@@ -59,7 +55,6 @@
             <version>${project.version}</version>
             <classifier>${jwebmp.runtime.classifier}</classifier>
             <type>jar</type>
-            <optional>true</optional>
         </dependency>
 
         <dependency>
