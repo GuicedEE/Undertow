@@ -18,7 +18,6 @@
 package com.jwebmp.undertow;
 
 import com.google.inject.servlet.GuiceFilter;
-import com.jwebmp.guicedservlets.GuicedServletContextListener;
 import com.jwebmp.guicedservlets.GuicedServletSessionManager;
 import com.jwebmp.logger.LogFactory;
 import io.undertow.server.handlers.resource.ClassPathResourceManager;
@@ -47,9 +46,9 @@ public class UndertowJWebMPHandlerExtension
 	@Override
 	public void handleDeployment(DeploymentInfo deploymentInfo, ServletContext servletContext)
 	{
-		if(servletContext.getAttribute(ATTRIBUTE_NAME) == null)
+		if (servletContext.getAttribute(ATTRIBUTE_NAME) == null)
 		{
-			log.fine("Registering Guice Filter in Undertow");
+			UndertowJWebMPHandlerExtension.log.fine("Registering Guice Filter in Undertow");
 			deploymentInfo.addFilter(new FilterInfo("GuiceFilter", GuiceFilter.class).setAsyncSupported(true));
 			deploymentInfo.addFilterUrlMapping("GuiceFilter", "/*", DispatcherType.REQUEST);
 			deploymentInfo.addListener(new ListenerInfo(GuicedServletSessionManager.class));
@@ -57,10 +56,10 @@ public class UndertowJWebMPHandlerExtension
 		}
 		else
 		{
-			log.fine("Skipping Deployment Info for Web Sockets " + deploymentInfo.getDeploymentName());
+			UndertowJWebMPHandlerExtension.log.fine("Skipping Guice Filter Deployment Info for Web Sockets " + deploymentInfo.getDeploymentName());
 		}
-		log.config("Configuring Resources to be found in META-INF/resources");
+		UndertowJWebMPHandlerExtension.log.config("Configuring Resources to be found in META-INF/resources");
 		deploymentInfo.setResourceManager(new ClassPathResourceManager(deploymentInfo.getClassLoader(), "META-INF/resources"));
-		log.fine("Undertow Ready");
+		UndertowJWebMPHandlerExtension.log.fine("Undertow Ready");
 	}
 }
