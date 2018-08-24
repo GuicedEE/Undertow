@@ -41,6 +41,7 @@ public class UndertowJWebMPHandlerExtension
 
 	public UndertowJWebMPHandlerExtension()
 	{
+		//No config required
 	}
 
 	@Override
