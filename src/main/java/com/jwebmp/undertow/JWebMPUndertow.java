@@ -91,14 +91,23 @@ public class JWebMPUndertow
 		HttpHandler encodingHandler = new EncodingHandler.Builder().build(null)
 		                                                           .wrap(jwebSwingHandler);
 
-		PathHandler ph = path().addPrefixPath("/jwebmpwssocket", JWebMPUndertowWebSocketConfiguration.getWebSocketHandler())
-		                       .addPrefixPath("/", encodingHandler);
+		PathHandler ph;
+		if (JWebMPUndertowWebSocketConfiguration.getWebSocketHandler() != null)
+		{
+			ph = path().addPrefixPath("/jwebmpwssocket", JWebMPUndertowWebSocketConfiguration.getWebSocketHandler())
+			           .addPrefixPath("/", encodingHandler);
+		}
+		else
+		{
+			ph = path().addPrefixPath("/", encodingHandler);
+		}
 
 		server.setHandler(new SessionAttachmentHandler(
 				new LearningPushHandler(100, -1,
 				                        Handlers.header(ph,
 				                                        "x-undertow-transport", ExchangeAttributes.transportProtocol())),
-				new InMemorySessionManager("test"), new SessionCookieConfig()));
+				new InMemorySessionManager("sessionManager"), new SessionCookieConfig().setSecure(true)
+				                                                                       .setHttpOnly(true)));
 
 		Undertow u = server.build();
 		u.start();

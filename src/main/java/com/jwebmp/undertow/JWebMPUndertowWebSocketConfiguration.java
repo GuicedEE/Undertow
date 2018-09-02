@@ -24,6 +24,10 @@ public class JWebMPUndertowWebSocketConfiguration
 	private static final Logger log = LogFactory.getLog("UndertowWebSockets");
 	private static WebSocketDeploymentInfo webSocketDeploymentInfo;
 	private static HttpHandler webSocketHandler;
+	/**
+	 * If web sockets should be loaded with UnderTow
+	 */
+	private static boolean enabled;
 
 	/**
 	 * Returns the WebSocketDeploymentInfo for use in the Servlet Extension
@@ -32,44 +36,57 @@ public class JWebMPUndertowWebSocketConfiguration
 	 */
 	public static WebSocketDeploymentInfo getWebSocketDeploymentInfo()
 	{
-		return webSocketDeploymentInfo;
+		return JWebMPUndertowWebSocketConfiguration.webSocketDeploymentInfo;
 	}
 
 	public static HttpHandler getWebSocketHandler()
 	{
-		return webSocketHandler;
+		return JWebMPUndertowWebSocketConfiguration.webSocketHandler;
+	}
+
+	public static boolean isEnabled()
+	{
+		return JWebMPUndertowWebSocketConfiguration.enabled;
+	}
+
+	public static void setEnabled(boolean enabled)
+	{
+		JWebMPUndertowWebSocketConfiguration.enabled = enabled;
 	}
 
 	@Override
 	public void configure()
 	{
-		log.config("Setting up XNIO for Websockets at /jwebmpwssocket");
-		final Xnio xnio = Xnio.getInstance("nio");
-		final XnioWorker xnioWorker;
-		try
+		if (JWebMPUndertowWebSocketConfiguration.enabled)
 		{
-			xnioWorker = xnio.createWorker(OptionMap.builder()
-			                                        .getMap());
-			JWebMPUndertowWebSocketConfiguration.webSocketDeploymentInfo = new WebSocketDeploymentInfo()
-					                                                               .addEndpoint(JWebMPSocket.class)
-					                                                               .setWorker(xnioWorker);
-			DeploymentInfo websocketDeployment = deployment()
-					                                     .setContextPath("/jwebmpwssocket")
-					                                     .addServletContextAttribute(ATTRIBUTE_NAME, webSocketDeploymentInfo)
-					                                     .setDeploymentName("websocket-deployment")
-					                                     .setClassLoader(Thread.currentThread()
-					                                                           .getContextClassLoader());
+			JWebMPUndertowWebSocketConfiguration.log.config("Setting up XNIO for Websockets at /jwebmpwssocket");
+			final Xnio xnio = Xnio.getInstance("nio");
+			final XnioWorker xnioWorker;
+			try
+			{
+				xnioWorker = xnio.createWorker(OptionMap.builder()
+				                                        .getMap());
+				JWebMPUndertowWebSocketConfiguration.webSocketDeploymentInfo = new WebSocketDeploymentInfo()
+						                                                               .addEndpoint(JWebMPSocket.class)
+						                                                               .setWorker(xnioWorker);
+				DeploymentInfo websocketDeployment = deployment()
+						                                     .setContextPath("/jwebmpwssocket")
+						                                     .addServletContextAttribute(ATTRIBUTE_NAME, JWebMPUndertowWebSocketConfiguration.webSocketDeploymentInfo)
+						                                     .setDeploymentName("websocket-deployment")
+						                                     .setClassLoader(Thread.currentThread()
+						                                                           .getContextClassLoader());
 
-			DeploymentManager manager = Servlets.defaultContainer()
-			                                    .addDeployment(websocketDeployment);
+				DeploymentManager manager = Servlets.defaultContainer()
+				                                    .addDeployment(websocketDeployment);
 
-			manager.deploy();
-			log.fine("Registering WebSockets in Undertow");
-			webSocketHandler = manager.start();
-		}
-		catch (Exception e)
-		{
-			log.log(Level.SEVERE, "Unable to configure XNIO with WebSocket Handler", e);
+				manager.deploy();
+				JWebMPUndertowWebSocketConfiguration.log.fine("Registering WebSockets in Undertow");
+				JWebMPUndertowWebSocketConfiguration.webSocketHandler = manager.start();
+			}
+			catch (Exception e)
+			{
+				JWebMPUndertowWebSocketConfiguration.log.log(Level.SEVERE, "Unable to configure XNIO with WebSocket Handler", e);
+			}
 		}
 	}
 }
