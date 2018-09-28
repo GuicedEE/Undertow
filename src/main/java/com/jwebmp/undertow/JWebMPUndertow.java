@@ -15,6 +15,7 @@ import io.undertow.server.session.SessionCookieConfig;
 import io.undertow.servlet.Servlets;
 import io.undertow.servlet.api.DeploymentInfo;
 import io.undertow.servlet.api.DeploymentManager;
+import org.xnio.Xnio;
 
 import javax.net.ssl.*;
 import java.io.InputStream;
@@ -62,6 +63,7 @@ public class JWebMPUndertow
 			                                             JWebMPUndertow.loadKeyStore(referenceClass, serverTruststore, storePassword),
 			                                             storePassword);
 		}
+		System.out.println("Booting Xnio " + Xnio.getInstance().getName());
 		Undertow.Builder server = Undertow.builder();
 		if (http2)
 		{
