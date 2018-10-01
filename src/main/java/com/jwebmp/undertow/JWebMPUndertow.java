@@ -1,6 +1,7 @@
 package com.jwebmp.undertow;
 
 import com.jwebmp.guicedinjection.GuiceContext;
+import com.jwebmp.logger.LogFactory;
 import io.undertow.Handlers;
 import io.undertow.Undertow;
 import io.undertow.UndertowOptions;
@@ -22,12 +23,15 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.KeyStore;
+import java.util.logging.Logger;
 
 import static io.undertow.Handlers.*;
 import static io.undertow.servlet.Servlets.*;
 
 public class JWebMPUndertow
 {
+	private static final Logger log = LogFactory.getLog("JWebMP Undertow");
+
 	private String serverKeystore;
 	private char[] storePassword;
 	private Class referenceClass;
@@ -63,7 +67,8 @@ public class JWebMPUndertow
 			                                             JWebMPUndertow.loadKeyStore(referenceClass, serverTruststore, storePassword),
 			                                             storePassword);
 		}
-		System.out.println("Booting Xnio " + Xnio.getInstance().getName());
+		log.config("Setting XNIO Provider : " + Xnio.getInstance()
+		                                            .getName());
 		Undertow.Builder server = Undertow.builder();
 		if (http2)
 		{
@@ -116,7 +121,7 @@ public class JWebMPUndertow
 		return u;
 	}
 
-	private static SSLContext createSSLContext(final KeyStore keyStore, final KeyStore trustStore, char[] password) throws Exception
+	private static SSLContext createSSLContext(KeyStore keyStore, KeyStore trustStore, char[] password) throws Exception
 	{
 		KeyManager[] keyManagers;
 		KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
@@ -138,7 +143,7 @@ public class JWebMPUndertow
 	private static KeyStore loadKeyStore(Class referencePath, String name, char[] password) throws Exception
 	{
 		String storeLoc = System.getProperty(name);
-		final InputStream stream;
+		InputStream stream;
 		if (storeLoc == null)
 		{
 			stream = referencePath.getResourceAsStream(name);
