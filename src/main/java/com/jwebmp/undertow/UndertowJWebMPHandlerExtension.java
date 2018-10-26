@@ -22,7 +22,6 @@ import com.jwebmp.guicedservlets.GuicedServletSessionManager;
 import com.jwebmp.logger.LogFactory;
 import io.undertow.server.handlers.resource.ClassPathResourceManager;
 import io.undertow.servlet.ServletExtension;
-import io.undertow.servlet.Servlets;
 import io.undertow.servlet.api.DeploymentInfo;
 import io.undertow.servlet.api.FilterInfo;
 import io.undertow.servlet.api.ListenerInfo;
@@ -52,8 +51,12 @@ public class UndertowJWebMPHandlerExtension
 			UndertowJWebMPHandlerExtension.log.fine("Registering Guice Filter in Undertow");
 			deploymentInfo.addFilter(new FilterInfo("GuiceFilter", GuiceFilter.class).setAsyncSupported(true));
 			deploymentInfo.addFilterUrlMapping("GuiceFilter", "/*", DispatcherType.REQUEST);
+
 			deploymentInfo.addListener(new ListenerInfo(GuicedServletSessionManager.class));
-			deploymentInfo.addListener(Servlets.listener(GuicedServletSessionManager.class));
+			//	deploymentInfo.addListener(Servlets.listener(GuicedServletSessionManager.class));
+
+			//	deploymentInfo.addServletContextAttribute(RIConstants.FACES_INITIALIZER_MAPPINGS_ADDED, Boolean.TRUE);
+			//	deploymentInfo.addListener(new ListenerInfo(com.sun.faces.config.ConfigureListener.class));
 		}
 		else
 		{
