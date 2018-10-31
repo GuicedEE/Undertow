@@ -29,22 +29,7 @@
             <!--<optional>true</optional>-->
             <type>jar</type>
         </dependency>
-        <dependency>
-            <groupId>com.jwebmp</groupId>
-            <artifactId>jwebmp-interception</artifactId>
-            <version>${project.version}</version>
-            <classifier>${jwebmp.runtime.classifier}</classifier>
-            <!--<optional>true</optional>-->
-            <type>jar</type>
-        </dependency>
-        <dependency>
-            <groupId>com.jwebmp</groupId>
-            <artifactId>guiced-injection</artifactId>
-            <version>${project.version}</version>
-            <classifier>${jwebmp.runtime.classifier}</classifier>
-            <!--<optional>true</optional>-->
-            <type>jar</type>
-        </dependency>
+
         <dependency>
             <groupId>com.jwebmp</groupId>
             <artifactId>jwebmp-websockets</artifactId>
@@ -53,39 +38,10 @@
             <!--<optional>true</optional>-->
             <type>jar</type>
         </dependency>
-        <dependency>
-            <groupId>com.jwebmp</groupId>
-            <artifactId>jwebmp-log-master</artifactId>
-            <version>${project.version}</version>
-            <classifier>${jwebmp.runtime.classifier}</classifier>
-            <!--<optional>true</optional>-->
-            <type>jar</type>
-        </dependency>
-        <dependency>
-            <groupId>com.jwebmp</groupId>
-            <artifactId>guiced-servlets</artifactId>
-            <version>${project.version}</version>
-            <classifier>${jwebmp.runtime.classifier}</classifier>
-            <!--<optional>true</optional>-->
-            <type>jar</type>
-        </dependency>
-
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>${servlet.api.version}</version>
-            <type>jar</type>
-        </dependency>
 
         <dependency>
             <groupId>org.jboss.xnio</groupId>
             <artifactId>xnio-nio</artifactId>
-            <type>jar</type>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jboss.xnio</groupId>
-            <artifactId>xnio-api</artifactId>
             <type>jar</type>
         </dependency>
 
@@ -98,12 +54,6 @@
         <dependency>
             <groupId>io.undertow</groupId>
             <artifactId>undertow-core</artifactId>
-            <type>jar</type>
-        </dependency>
-
-        <dependency>
-            <groupId>io.undertow</groupId>
-            <artifactId>undertow-servlet</artifactId>
             <type>jar</type>
         </dependency>
 
