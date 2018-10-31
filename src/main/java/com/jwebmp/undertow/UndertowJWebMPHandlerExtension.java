@@ -51,19 +51,14 @@ public class UndertowJWebMPHandlerExtension
 			UndertowJWebMPHandlerExtension.log.fine("Registering Guice Filter in Undertow");
 			deploymentInfo.addFilter(new FilterInfo("GuiceFilter", GuiceFilter.class).setAsyncSupported(true));
 			deploymentInfo.addFilterUrlMapping("GuiceFilter", "/*", DispatcherType.REQUEST);
-
 			deploymentInfo.addListener(new ListenerInfo(GuicedServletSessionManager.class));
-			//	deploymentInfo.addListener(Servlets.listener(GuicedServletSessionManager.class));
-
-			//	deploymentInfo.addServletContextAttribute(RIConstants.FACES_INITIALIZER_MAPPINGS_ADDED, Boolean.TRUE);
-			//	deploymentInfo.addListener(new ListenerInfo(com.sun.faces.config.ConfigureListener.class));
 		}
 		else
 		{
-			UndertowJWebMPHandlerExtension.log.fine("Skipping Guice Filter Deployment Info for Web Sockets " + deploymentInfo.getDeploymentName());
+			UndertowJWebMPHandlerExtension.log.fine("Requested to configure guice for web sockets - skipped. - " + deploymentInfo.getDeploymentName());
 		}
 		UndertowJWebMPHandlerExtension.log.config("Configuring Resources to be found in META-INF/resources");
 		deploymentInfo.setResourceManager(new ClassPathResourceManager(deploymentInfo.getClassLoader(), "META-INF/resources"));
-		UndertowJWebMPHandlerExtension.log.fine("Undertow Ready");
+		UndertowJWebMPHandlerExtension.log.fine("Undertow Configured");
 	}
 }
