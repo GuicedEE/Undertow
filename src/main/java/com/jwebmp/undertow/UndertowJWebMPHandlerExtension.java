@@ -18,13 +18,16 @@
 package com.jwebmp.undertow;
 
 import com.google.inject.servlet.GuiceFilter;
+import com.jwebmp.guicedinjection.GuiceContext;
 import com.jwebmp.guicedservlets.GuicedServletSessionManager;
 import com.jwebmp.logger.LogFactory;
 import io.undertow.server.handlers.resource.ClassPathResourceManager;
 import io.undertow.servlet.ServletExtension;
 import io.undertow.servlet.api.DeploymentInfo;
 import io.undertow.servlet.api.FilterInfo;
+import io.undertow.servlet.api.InstanceFactory;
 import io.undertow.servlet.api.ListenerInfo;
+import io.undertow.servlet.util.ImmediateInstanceFactory;
 
 import javax.servlet.DispatcherType;
 import javax.servlet.ServletContext;
@@ -49,9 +52,11 @@ public class UndertowJWebMPHandlerExtension
 		if (servletContext.getAttribute(ATTRIBUTE_NAME) == null)
 		{
 			UndertowJWebMPHandlerExtension.log.fine("Registering Guice Filter in Undertow");
-			deploymentInfo.addFilter(new FilterInfo("GuiceFilter", GuiceFilter.class).setAsyncSupported(true));
-			deploymentInfo.addFilterUrlMapping("GuiceFilter", "/*", DispatcherType.REQUEST);
-			deploymentInfo.addListener(new ListenerInfo(GuicedServletSessionManager.class));
+			InstanceFactory guiceInstanceFactory = new ImmediateInstanceFactory<>(GuiceContext.get(GuicedServletSessionManager.class));
+			InstanceFactory guiceFilterFactory = new ImmediateInstanceFactory<>(GuiceContext.get(GuiceFilter.class));
+			deploymentInfo.addFilter(new FilterInfo("GuiceUndertowFilter", GuiceFilter.class, guiceFilterFactory).setAsyncSupported(true));
+			deploymentInfo.addFilterUrlMapping("GuiceUndertowFilter", "/*", DispatcherType.REQUEST);
+			deploymentInfo.addListener(new ListenerInfo(GuicedServletSessionManager.class, guiceInstanceFactory));
 		}
 		else
 		{
