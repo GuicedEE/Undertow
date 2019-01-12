@@ -19,7 +19,7 @@ import static io.undertow.servlet.Servlets.*;
 import static io.undertow.websockets.jsr.WebSocketDeploymentInfo.*;
 
 public class JWebMPUndertowWebSocketConfiguration
-		implements IWebSocketPreConfiguration
+		implements IWebSocketPreConfiguration<JWebMPUndertowWebSocketConfiguration>
 {
 	private static final Logger log = LogFactory.getLog("UndertowWebSockets");
 	private static WebSocketDeploymentInfo webSocketDeploymentInfo;
@@ -60,8 +60,8 @@ public class JWebMPUndertowWebSocketConfiguration
 		if (JWebMPUndertowWebSocketConfiguration.enabled)
 		{
 			JWebMPUndertowWebSocketConfiguration.log.config("Setting up XNIO for Websockets at /jwebmpwssocket");
-			final Xnio xnio = Xnio.getInstance("nio");
-			final XnioWorker xnioWorker;
+			Xnio xnio = Xnio.getInstance("nio");
+			XnioWorker xnioWorker;
 			try
 			{
 				xnioWorker = xnio.createWorker(OptionMap.builder()
@@ -88,5 +88,11 @@ public class JWebMPUndertowWebSocketConfiguration
 				JWebMPUndertowWebSocketConfiguration.log.log(Level.SEVERE, "Unable to configure XNIO with WebSocket Handler", e);
 			}
 		}
+	}
+
+	@Override
+	public boolean enabled()
+	{
+		return true;
 	}
 }
