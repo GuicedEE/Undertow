@@ -70,9 +70,11 @@ public class JWebMPUndertow
 		log.config("Setting XNIO Provider : " + Xnio.getInstance()
 		                                            .getName());
 		Undertow.Builder server = Undertow.builder();
+		//server.setServerOption(UndertowOptions.MAX_COOKIES, 0);
 		if (http2)
 		{
 			server.setServerOption(UndertowOptions.ENABLE_HTTP2, true);
+			server.setServerOption(UndertowOptions.HTTP2_SETTINGS_ENABLE_PUSH, true);
 		}
 		if (ssl)
 		{
@@ -108,13 +110,14 @@ public class JWebMPUndertow
 		{
 			ph = path().addPrefixPath("/", encodingHandler);
 		}
-
 		server.setHandler(new SessionAttachmentHandler(
 				new LearningPushHandler(100, -1,
 				                        Handlers.header(ph,
 				                                        "x-undertow-transport", ExchangeAttributes.transportProtocol())),
 				new InMemorySessionManager("sessionManager"), new SessionCookieConfig().setSecure(true)
-				                                                                       .setHttpOnly(true)));
+				                                                                       .setHttpOnly(true)
+		));
+
 
 		Undertow u = server.build();
 		u.start();
