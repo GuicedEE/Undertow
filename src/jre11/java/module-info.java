@@ -1,11 +1,3 @@
-import com.jwebmp.guicedinjection.interfaces.IGuiceScanJarExclusions;
-import com.jwebmp.guicedinjection.interfaces.IGuiceScanModuleExclusions;
-import com.jwebmp.undertow.JWebMPUndertowWebSocketConfiguration;
-import com.jwebmp.undertow.UndertowJWebMPHandlerExtension;
-import com.jwebmp.undertow.UndertowWebSocketSessionProvider;
-import com.jwebmp.undertow.implementations.UndertowModuleExclusions;
-import com.jwebmp.websockets.services.IWebSocketPreConfiguration;
-
 module com.jwebmp.undertow
 {
 	exports com.jwebmp.undertow;
@@ -32,12 +24,12 @@ module com.jwebmp.undertow
 
 	requires transitive jdk.unsupported;
 
-	provides io.undertow.servlet.ServletExtension with UndertowJWebMPHandlerExtension;
-	provides IWebSocketPreConfiguration with JWebMPUndertowWebSocketConfiguration;
-	provides com.jwebmp.websockets.services.IWebSocketSessionProvider with UndertowWebSocketSessionProvider;
+	provides io.undertow.servlet.ServletExtension with com.jwebmp.undertow.UndertowJWebMPHandlerExtension;
+	provides com.jwebmp.websockets.services.IWebSocketPreConfiguration with com.jwebmp.undertow.JWebMPUndertowWebSocketConfiguration;
+	provides com.jwebmp.websockets.services.IWebSocketSessionProvider with com.jwebmp.undertow.UndertowWebSocketSessionProvider;
 
-	provides IGuiceScanJarExclusions with UndertowModuleExclusions;
-	provides IGuiceScanModuleExclusions with UndertowModuleExclusions;
+	provides com.jwebmp.guicedinjection.interfaces.IGuiceScanJarExclusions with com.jwebmp.undertow.implementations.UndertowModuleExclusions;
+	provides com.jwebmp.guicedinjection.interfaces.IGuiceScanModuleExclusions with com.jwebmp.undertow.implementations.UndertowModuleExclusions;
 
 	opens com.jwebmp.undertow;
 }
