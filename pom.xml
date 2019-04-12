@@ -3,15 +3,15 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.jwebmp</groupId>
-        <artifactId>jwebmp-builder</artifactId>
+        <groupId>com.jwebmp.guicedee.servlets</groupId>
+        <artifactId>servlets-parent</artifactId>
         <version>0.0.0_0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>jwebmp-undertow</artifactId>
+    <artifactId>guiced-undertow</artifactId>
     <packaging>jar</packaging>
 
-    <name>JWebSwing Undertow</name>
+    <name>Guiced Undertow</name>
     <description>Allows instant atmopshere push usage in Embedded Containers mainly Undertow, and Undertow-Enabled such as JBoss, EAP, Jersey etc.</description>
     <url>https://github.com/GedMarc/JWebSwing-Undertow</url>
 
@@ -22,63 +22,43 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.jwebmp</groupId>
-            <artifactId>jwebmp-core</artifactId>
-            <version>${project.version}</version>
-            <classifier>${jwebmp.runtime.classifier}</classifier>
-            <!--<optional>true</optional>-->
-            <type>jar</type>
-        </dependency>
-
-        <dependency>
-            <groupId>com.jwebmp</groupId>
-            <artifactId>jwebmp-websockets</artifactId>
-            <version>${project.version}</version>
-            <classifier>${jwebmp.runtime.classifier}</classifier>
-            <!--<optional>true</optional>-->
-            <type>jar</type>
+            <groupId>com.jwebmp.guicedee.servlets</groupId>
+            <artifactId>guiced-websockets</artifactId>
         </dependency>
 
         <dependency>
             <groupId>org.jboss.xnio</groupId>
             <artifactId>xnio-nio</artifactId>
-            <type>jar</type>
         </dependency>
 
         <dependency>
             <groupId>io.undertow</groupId>
             <artifactId>undertow-websockets-jsr</artifactId>
-            <type>jar</type>
         </dependency>
 
         <dependency>
             <groupId>io.undertow</groupId>
             <artifactId>undertow-core</artifactId>
-            <type>jar</type>
         </dependency>
 
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
-            <type>jar</type>
         </dependency>
 
         <dependency>
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest-all</artifactId>
-            <type>jar</type>
         </dependency>
 
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
-            <type>jar</type>
         </dependency>
 
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <type>jar</type>
         </dependency>
     </dependencies>
     <scm>

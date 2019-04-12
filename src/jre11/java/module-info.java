@@ -18,7 +18,7 @@ module com.jwebmp.undertow
 	requires transitive com.jwebmp.websockets;
 
 	requires transitive com.jwebmp.guicedinjection;
-	requires transitive com.jwebmp.core;
+	//requires transitive com.jwebmp.core;
 	requires transitive com.jwebmp.guicedservlets;
 	requires java.validation;
 
