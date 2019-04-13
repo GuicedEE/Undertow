@@ -1,7 +1,7 @@
 package com.jwebmp.undertow;
 
 import com.jwebmp.logger.LogFactory;
-import com.jwebmp.websockets.JWebMPSocket;
+import com.jwebmp.websockets.GuicedWebSocket;
 import com.jwebmp.websockets.services.IWebSocketPreConfiguration;
 import io.undertow.server.HttpHandler;
 import io.undertow.servlet.Servlets;
@@ -67,7 +67,7 @@ public class JWebMPUndertowWebSocketConfiguration
 				xnioWorker = xnio.createWorker(OptionMap.builder()
 				                                        .getMap());
 				JWebMPUndertowWebSocketConfiguration.webSocketDeploymentInfo = new WebSocketDeploymentInfo()
-						                                                               .addEndpoint(JWebMPSocket.class)
+						                                                               .addEndpoint(GuicedWebSocket.class)
 						                                                               .setWorker(xnioWorker);
 				DeploymentInfo websocketDeployment = deployment()
 						                                     .setContextPath("/jwebmpwssocket")
