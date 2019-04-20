@@ -24,21 +24,25 @@
         <dependency>
             <groupId>com.jwebmp.guicedee.servlets</groupId>
             <artifactId>guiced-websockets</artifactId>
+            <type>jar</type>
         </dependency>
 
         <dependency>
             <groupId>org.jboss.xnio</groupId>
             <artifactId>xnio-nio</artifactId>
+            <type>jar</type>
         </dependency>
 
         <dependency>
             <groupId>io.undertow</groupId>
             <artifactId>undertow-websockets-jsr</artifactId>
+            <type>jar</type>
         </dependency>
 
         <dependency>
             <groupId>io.undertow</groupId>
             <artifactId>undertow-core</artifactId>
+            <type>jar</type>
         </dependency>
 
         <dependency>
