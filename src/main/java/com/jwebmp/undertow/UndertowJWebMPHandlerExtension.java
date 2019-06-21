@@ -40,7 +40,7 @@ import static io.undertow.websockets.jsr.WebSocketDeploymentInfo.*;
 public class UndertowJWebMPHandlerExtension
 		implements ServletExtension
 {
-	private static final Logger log = LogFactory.getLog("JWebMPUndertow");
+	private static final Logger log = LogFactory.getLog("GuicedUndertow");
 
 	public UndertowJWebMPHandlerExtension()
 	{

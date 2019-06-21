@@ -2,6 +2,7 @@ package com.jwebmp.undertow;
 
 import com.jwebmp.guicedinjection.GuiceContext;
 import com.jwebmp.logger.LogFactory;
+import com.jwebmp.undertow.services.UndertowDeploymentConfigurator;
 import io.undertow.Handlers;
 import io.undertow.Undertow;
 import io.undertow.UndertowOptions;
@@ -23,12 +24,14 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.KeyStore;
+import java.util.ServiceLoader;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import static io.undertow.Handlers.*;
 import static io.undertow.servlet.Servlets.*;
 
-public class JWebMPUndertow
+public class GuicedUndertow
 {
 	private static final Logger log = LogFactory.getLog("JWebMP Undertow");
 
@@ -44,7 +47,7 @@ public class JWebMPUndertow
 
 	public static Undertow boot(String host, int port, boolean ssl, String serverKeystore, String serverTruststore, String sslKey, char[] sslPassword, Class referenceClass, boolean http2) throws Exception
 	{
-		JWebMPUndertow undertow = new JWebMPUndertow();
+		GuicedUndertow undertow = new GuicedUndertow();
 		undertow.host = host;
 		undertow.port = port;
 		undertow.ssl = ssl;
@@ -63,8 +66,8 @@ public class JWebMPUndertow
 		SSLContext sslContext = null;
 		if (ssl)
 		{
-			sslContext = JWebMPUndertow.createSSLContext(JWebMPUndertow.loadKeyStore(referenceClass, serverKeystore, storePassword),
-			                                             JWebMPUndertow.loadKeyStore(referenceClass, serverTruststore, storePassword),
+			sslContext = GuicedUndertow.createSSLContext(GuicedUndertow.loadKeyStore(referenceClass, serverKeystore, storePassword),
+			                                             GuicedUndertow.loadKeyStore(referenceClass, serverTruststore, storePassword),
 			                                             storePassword);
 		}
 		log.config("Setting XNIO Provider : " + Xnio.getInstance()
@@ -86,9 +89,16 @@ public class JWebMPUndertow
 		}
 
 		DeploymentInfo deploymentInfo = deployment()
-				                                .setClassLoader(JWebMPUndertow.class.getClassLoader())
+				                                .setClassLoader(GuicedUndertow.class.getClassLoader())
 				                                .setContextPath("/")
 				                                .setDeploymentName(host + "-" + port + ".war");
+
+		Set<UndertowDeploymentConfigurator> configs = GuiceContext.instance()
+		                                                          .getLoader(UndertowDeploymentConfigurator.class, ServiceLoader.load(UndertowDeploymentConfigurator.class));
+		for (UndertowDeploymentConfigurator config : configs)
+		{
+			deploymentInfo = config.configure(deploymentInfo);
+		}
 
 		DeploymentManager manager = Servlets.defaultContainer()
 		                                    .addDeployment(deploymentInfo);
@@ -101,9 +111,9 @@ public class JWebMPUndertow
 		                                                           .wrap(jwebSwingHandler);
 
 		PathHandler ph;
-		if (JWebMPUndertowWebSocketConfiguration.getWebSocketHandler() != null)
+		if (GuicedUndertowWebSocketConfiguration.getWebSocketHandler() != null)
 		{
-			ph = path().addPrefixPath("/jwebmpwssocket", JWebMPUndertowWebSocketConfiguration.getWebSocketHandler())
+			ph = path().addPrefixPath("/jwebmpwssocket", GuicedUndertowWebSocketConfiguration.getWebSocketHandler())
 			           .addPrefixPath("/", encodingHandler);
 		}
 		else
@@ -170,7 +180,7 @@ public class JWebMPUndertow
 
 	public static Undertow boot(String host, int port) throws Exception
 	{
-		JWebMPUndertow undertow = new JWebMPUndertow();
+		GuicedUndertow undertow = new GuicedUndertow();
 		undertow.host = host;
 		undertow.port = port;
 		return undertow.bootMe();

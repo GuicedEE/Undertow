@@ -13,7 +13,7 @@ public class TestIT
 		try
 		{
 			LogFactory.configureConsoleColourOutput(Level.FINE);
-			JWebMPUndertow.boot("localhost", 9999);
+			GuicedUndertow.boot("localhost", 9999);
 			System.out.println("done");
 		}
 		catch (Exception e)

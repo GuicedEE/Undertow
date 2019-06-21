@@ -1,6 +1,7 @@
 module com.jwebmp.undertow
 {
 	exports com.jwebmp.undertow;
+	exports com.jwebmp.undertow.services;
 
 	requires com.google.guice.extensions.servlet;
 
@@ -25,11 +26,13 @@ module com.jwebmp.undertow
 	requires transitive jdk.unsupported;
 
 	provides io.undertow.servlet.ServletExtension with com.jwebmp.undertow.UndertowJWebMPHandlerExtension;
-	provides com.jwebmp.websockets.services.IWebSocketPreConfiguration with com.jwebmp.undertow.JWebMPUndertowWebSocketConfiguration;
+	provides com.jwebmp.websockets.services.IWebSocketPreConfiguration with com.jwebmp.undertow.GuicedUndertowWebSocketConfiguration;
 	provides com.jwebmp.websockets.services.IWebSocketSessionProvider with com.jwebmp.undertow.UndertowWebSocketSessionProvider;
 
 	provides com.jwebmp.guicedinjection.interfaces.IGuiceScanJarExclusions with com.jwebmp.undertow.implementations.UndertowModuleExclusions;
 	provides com.jwebmp.guicedinjection.interfaces.IGuiceScanModuleExclusions with com.jwebmp.undertow.implementations.UndertowModuleExclusions;
 
-	opens com.jwebmp.undertow;
+	opens com.jwebmp.undertow to com.google.guice;
+
+	uses com.jwebmp.undertow.services.UndertowDeploymentConfigurator;
 }

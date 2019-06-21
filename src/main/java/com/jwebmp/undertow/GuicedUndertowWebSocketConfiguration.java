@@ -18,8 +18,8 @@ import java.util.logging.Logger;
 import static io.undertow.servlet.Servlets.*;
 import static io.undertow.websockets.jsr.WebSocketDeploymentInfo.*;
 
-public class JWebMPUndertowWebSocketConfiguration
-		implements IWebSocketPreConfiguration<JWebMPUndertowWebSocketConfiguration>
+public class GuicedUndertowWebSocketConfiguration
+		implements IWebSocketPreConfiguration<GuicedUndertowWebSocketConfiguration>
 {
 	private static final Logger log = LogFactory.getLog("UndertowWebSockets");
 	private static WebSocketDeploymentInfo webSocketDeploymentInfo;
@@ -33,30 +33,30 @@ public class JWebMPUndertowWebSocketConfiguration
 	 */
 	public static WebSocketDeploymentInfo getWebSocketDeploymentInfo()
 	{
-		return JWebMPUndertowWebSocketConfiguration.webSocketDeploymentInfo;
+		return GuicedUndertowWebSocketConfiguration.webSocketDeploymentInfo;
 	}
 
 	public static HttpHandler getWebSocketHandler()
 	{
-		return JWebMPUndertowWebSocketConfiguration.webSocketHandler;
+		return GuicedUndertowWebSocketConfiguration.webSocketHandler;
 	}
 
 	@Override
 	public void configure()
 	{
-		JWebMPUndertowWebSocketConfiguration.log.config("Setting up XNIO for Websockets at /jwebmpwssocket");
+		GuicedUndertowWebSocketConfiguration.log.config("Setting up XNIO for Websockets at /jwebmpwssocket");
 		Xnio xnio = Xnio.getInstance("nio");
 		XnioWorker xnioWorker;
 		try
 		{
 			xnioWorker = xnio.createWorker(OptionMap.builder()
 			                                        .getMap());
-			JWebMPUndertowWebSocketConfiguration.webSocketDeploymentInfo = new WebSocketDeploymentInfo()
+			GuicedUndertowWebSocketConfiguration.webSocketDeploymentInfo = new WebSocketDeploymentInfo()
 					                                                               .addEndpoint(GuicedWebSocket.class)
 					                                                               .setWorker(xnioWorker);
 			DeploymentInfo websocketDeployment = deployment()
 					                                     .setContextPath("/jwebmpwssocket")
-					                                     .addServletContextAttribute(ATTRIBUTE_NAME, JWebMPUndertowWebSocketConfiguration.webSocketDeploymentInfo)
+					                                     .addServletContextAttribute(ATTRIBUTE_NAME, GuicedUndertowWebSocketConfiguration.webSocketDeploymentInfo)
 					                                     .setDeploymentName("websocket-deployment")
 					                                     .setClassLoader(Thread.currentThread()
 					                                                           .getContextClassLoader());
@@ -65,13 +65,13 @@ public class JWebMPUndertowWebSocketConfiguration
 			                                    .addDeployment(websocketDeployment);
 
 			manager.deploy();
-			JWebMPUndertowWebSocketConfiguration.log.fine("Registering WebSockets in Undertow - [/jwebmpwssocket]");
-			JWebMPUndertowWebSocketConfiguration.webSocketHandler = manager.start();
-			JWebMPUndertowWebSocketConfiguration.log.fine("Completed WebSocket [/jwebmpwssocket]");
+			GuicedUndertowWebSocketConfiguration.log.fine("Registering WebSockets in Undertow - [/jwebmpwssocket]");
+			GuicedUndertowWebSocketConfiguration.webSocketHandler = manager.start();
+			GuicedUndertowWebSocketConfiguration.log.fine("Completed WebSocket [/jwebmpwssocket]");
 		}
 		catch (Exception e)
 		{
-			JWebMPUndertowWebSocketConfiguration.log.log(Level.SEVERE, "Unable to configure XNIO with WebSocket Handler", e);
+			GuicedUndertowWebSocketConfiguration.log.log(Level.SEVERE, "Unable to configure XNIO with WebSocket Handler", e);
 		}
 	}
 
