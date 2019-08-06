@@ -128,7 +128,6 @@ public class GuicedUndertow
 				                                                                       .setHttpOnly(true)
 		));
 
-
 		Undertow u = server.build();
 		u.start();
 		return u;

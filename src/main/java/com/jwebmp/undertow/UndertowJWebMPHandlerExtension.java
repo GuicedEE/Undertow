@@ -22,6 +22,7 @@ import com.jwebmp.guicedservlets.GuicedFilter;
 import com.jwebmp.guicedservlets.GuicedServletContextListener;
 import com.jwebmp.guicedservlets.GuicedServletSessionManager;
 import com.jwebmp.logger.LogFactory;
+import io.undertow.Handlers;
 import io.undertow.server.handlers.resource.ClassPathResourceManager;
 import io.undertow.servlet.ServletExtension;
 import io.undertow.servlet.api.DeploymentInfo;
@@ -65,8 +66,10 @@ public class UndertowJWebMPHandlerExtension
 		{
 			UndertowJWebMPHandlerExtension.log.fine("Requested to configure guice for web sockets - skipped. - " + deploymentInfo.getDeploymentName());
 		}
+
 		UndertowJWebMPHandlerExtension.log.config("Configuring Resources to be found in META-INF/resources");
 		deploymentInfo.setResourceManager(new ClassPathResourceManager(deploymentInfo.getClassLoader(), "META-INF/resources"));
+
 		UndertowJWebMPHandlerExtension.log.fine("Undertow Configured");
 	}
 }

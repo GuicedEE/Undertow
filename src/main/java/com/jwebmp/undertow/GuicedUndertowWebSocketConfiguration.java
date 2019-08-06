@@ -54,6 +54,7 @@ public class GuicedUndertowWebSocketConfiguration
 			GuicedUndertowWebSocketConfiguration.webSocketDeploymentInfo = new WebSocketDeploymentInfo()
 					                                                               .addEndpoint(GuicedWebSocket.class)
 					                                                               .setWorker(xnioWorker);
+
 			DeploymentInfo websocketDeployment = deployment()
 					                                     .setContextPath("/jwebmpwssocket")
 					                                     .addServletContextAttribute(ATTRIBUTE_NAME, GuicedUndertowWebSocketConfiguration.webSocketDeploymentInfo)
