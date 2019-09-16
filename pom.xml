@@ -28,7 +28,7 @@
         </dependency>
 
         <dependency>
-            <groupId>org.jboss.xnio</groupId>
+            <groupId>com.jwebmp.thirdparty</groupId>
             <artifactId>xnio-nio</artifactId>
             <type>jar</type>
         </dependency>
