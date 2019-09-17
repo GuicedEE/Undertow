@@ -34,13 +34,13 @@
         </dependency>
 
         <dependency>
-            <groupId>io.undertow</groupId>
+            <groupId>com.jwebmp.thirdparty.undertow</groupId>
             <artifactId>undertow-websockets-jsr</artifactId>
             <type>jar</type>
         </dependency>
 
         <dependency>
-            <groupId>io.undertow</groupId>
+            <groupId>com.jwebmp.thirdparty.undertow</groupId>
             <artifactId>undertow-core</artifactId>
             <type>jar</type>
         </dependency>
