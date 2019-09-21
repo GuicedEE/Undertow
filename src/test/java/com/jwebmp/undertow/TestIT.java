@@ -16,6 +16,7 @@ public class TestIT
 			LogFactory.configureConsoleColourOutput(Level.FINE);
 			Undertow ud = GuicedUndertow.boot("localhost", 9999);
 			System.out.println("done");
+			ud.stop();
 		}
 		catch (Exception e)
 		{

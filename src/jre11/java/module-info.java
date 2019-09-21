@@ -5,15 +5,17 @@ module com.jwebmp.undertow
 
 	requires com.google.guice.extensions.servlet;
 
-	requires undertow.core;
-	requires undertow.servlet;
-	requires javax.servlet.api;
+	requires transitive undertow.core;
+	requires transitive undertow.servlet;
+	requires transitive javax.servlet.api;
 	requires java.logging;
-	requires xnio.api;
+	requires transitive xnio.api;
+	requires transitive xnio;
+
 	requires undertow.websockets.jsr;
 	requires com.google.common;
-	requires com.google.guice;
-	requires javax.inject;
+	requires transitive com.google.guice;
+	requires transitive javax.inject;
 
 	requires transitive com.jwebmp.logmaster;
 	requires transitive com.jwebmp.websockets;
@@ -23,7 +25,7 @@ module com.jwebmp.undertow
 	requires transitive com.jwebmp.guicedservlets;
 	requires java.validation;
 
-	requires transitive jdk.unsupported;
+	requires jdk.unsupported;
 
 	provides io.undertow.servlet.ServletExtension with com.jwebmp.undertow.UndertowJWebMPHandlerExtension;
 	provides com.jwebmp.websockets.services.IWebSocketPreConfiguration with com.jwebmp.undertow.GuicedUndertowWebSocketConfiguration;
