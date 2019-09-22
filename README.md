@@ -5,6 +5,6 @@
 <dependency>
     <groupId>com.jwebmp</groupId>
     <artifactId>jwebmp-undertow</artifactId>
-    <version>LATEST</version>
-</dependency>
+    <version>LATEST</version><type>jar</type>
+            </dependency>
 ``` 
