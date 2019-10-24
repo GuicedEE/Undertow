@@ -1,7 +1,7 @@
-package com.jwebmp.undertow;
+package com.guicedee.guicedservlets.undertow;
 
-import com.jwebmp.guicedservlets.GuicedServletSessionManager;
-import com.jwebmp.websockets.services.IWebSocketSessionProvider;
+import com.guicedee.guicedservlets.GuicedServletSessionManager;
+import com.guicedee.guicedservlets.websockets.services.IWebSocketSessionProvider;
 
 import javax.servlet.http.HttpSession;
 

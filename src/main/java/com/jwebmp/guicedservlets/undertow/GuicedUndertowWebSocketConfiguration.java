@@ -1,8 +1,8 @@
-package com.jwebmp.undertow;
+package com.guicedee.guicedservlets.undertow;
 
-import com.jwebmp.logger.LogFactory;
-import com.jwebmp.websockets.GuicedWebSocket;
-import com.jwebmp.websockets.services.IWebSocketPreConfiguration;
+import com.guicedee.guicedservlets.websockets.GuicedWebSocket;
+import com.guicedee.logger.LogFactory;
+import com.guicedee.guicedservlets.websockets.services.IWebSocketPreConfiguration;
 import io.undertow.server.HttpHandler;
 import io.undertow.servlet.Servlets;
 import io.undertow.servlet.api.DeploymentInfo;
@@ -44,7 +44,7 @@ public class GuicedUndertowWebSocketConfiguration
 	@Override
 	public void configure()
 	{
-		GuicedUndertowWebSocketConfiguration.log.config("Setting up XNIO for Websockets at /jwebmpwssocket");
+		GuicedUndertowWebSocketConfiguration.log.config("Setting up XNIO for Websockets at /wssocket");
 		Xnio xnio = Xnio.getInstance("nio");
 		XnioWorker xnioWorker;
 		try
@@ -56,7 +56,7 @@ public class GuicedUndertowWebSocketConfiguration
 					                                                               .setWorker(xnioWorker);
 
 			DeploymentInfo websocketDeployment = deployment()
-					                                     .setContextPath("/jwebmpwssocket")
+					                                     .setContextPath("/wssocket")
 					                                     .addServletContextAttribute(ATTRIBUTE_NAME, GuicedUndertowWebSocketConfiguration.webSocketDeploymentInfo)
 					                                     .setDeploymentName("websocket-deployment")
 					                                     .setClassLoader(Thread.currentThread()
@@ -66,9 +66,9 @@ public class GuicedUndertowWebSocketConfiguration
 			                                    .addDeployment(websocketDeployment);
 
 			manager.deploy();
-			GuicedUndertowWebSocketConfiguration.log.fine("Registering WebSockets in Undertow - [/jwebmpwssocket]");
+			GuicedUndertowWebSocketConfiguration.log.fine("Registering WebSockets in Undertow - [/wssocket]");
 			GuicedUndertowWebSocketConfiguration.webSocketHandler = manager.start();
-			GuicedUndertowWebSocketConfiguration.log.fine("Completed WebSocket [/jwebmpwssocket]");
+			GuicedUndertowWebSocketConfiguration.log.fine("Completed WebSocket [/wssocket]");
 		}
 		catch (Exception e)
 		{

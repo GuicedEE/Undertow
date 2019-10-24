@@ -1,6 +1,6 @@
-package com.jwebmp.undertow.services;
+package com.guicedee.guicedservlets.undertow.services;
 
-import com.jwebmp.guicedinjection.interfaces.IDefaultService;
+import com.guicedee.guicedinjection.interfaces.IDefaultService;
 import io.undertow.servlet.api.DeploymentInfo;
 
 @FunctionalInterface

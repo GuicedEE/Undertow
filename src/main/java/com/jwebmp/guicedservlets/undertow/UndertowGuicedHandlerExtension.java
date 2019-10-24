@@ -15,15 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.jwebmp.undertow;
+package com.guicedee.guicedservlets.undertow;
 
-import com.jwebmp.guicedinjection.GuiceContext;
-import com.jwebmp.guicedservlets.GuicedFilter;
-import com.jwebmp.guicedservlets.GuicedServletContextListener;
-import com.jwebmp.guicedservlets.GuicedServletSessionManager;
-import com.jwebmp.logger.LogFactory;
-import io.undertow.Handlers;
-import io.undertow.server.handlers.resource.ClassPathResourceManager;
+import com.guicedee.guicedinjection.GuiceContext;
+import com.guicedee.guicedservlets.GuicedFilter;
+import com.guicedee.guicedservlets.GuicedServletContextListener;
+import com.guicedee.guicedservlets.GuicedServletSessionManager;
+import com.guicedee.logger.LogFactory;
 import io.undertow.servlet.ServletExtension;
 import io.undertow.servlet.api.DeploymentInfo;
 import io.undertow.servlet.api.FilterInfo;
@@ -38,38 +36,43 @@ import java.util.logging.Logger;
 import static io.undertow.websockets.jsr.WebSocketDeploymentInfo.*;
 
 @SuppressWarnings("unused")
-public class UndertowJWebMPHandlerExtension
+public class UndertowGuicedHandlerExtension
 		implements ServletExtension
 {
 	private static final Logger log = LogFactory.getLog("GuicedUndertow");
 
-	public UndertowJWebMPHandlerExtension()
+	public UndertowGuicedHandlerExtension()
 	{
 		//No config required
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void handleDeployment(DeploymentInfo deploymentInfo, ServletContext servletContext)
 	{
+		ClassLoader classLoader = ClassLoader.getSystemClassLoader();
+
 		if (servletContext.getAttribute(ATTRIBUTE_NAME) == null)
 		{
-			UndertowJWebMPHandlerExtension.log.fine("Registering Guice Filter in Undertow");
+			UndertowGuicedHandlerExtension.log.fine("Registering Guice Filter in Undertow");
+
 			InstanceFactory guicedContextInstanceFactory = new ImmediateInstanceFactory<>(GuiceContext.get(GuicedServletContextListener.class));
 			InstanceFactory guiceInstanceFactory = new ImmediateInstanceFactory<>(GuiceContext.get(GuicedServletSessionManager.class));
 			InstanceFactory guiceFilterFactory = new ImmediateInstanceFactory<>(GuiceContext.get(GuicedFilter.class));
+
 			deploymentInfo.addFilter(new FilterInfo("GuiceUndertowFilter", GuicedFilter.class, guiceFilterFactory).setAsyncSupported(true));
 			deploymentInfo.addFilterUrlMapping("GuiceUndertowFilter", "/*", DispatcherType.REQUEST);
+
 			deploymentInfo.addListener(new ListenerInfo(GuicedServletContextListener.class, guicedContextInstanceFactory));
 			deploymentInfo.addListener(new ListenerInfo(GuicedServletSessionManager.class, guiceInstanceFactory));
 		}
 		else
 		{
-			UndertowJWebMPHandlerExtension.log.fine("Requested to configure guice for web sockets - skipped. - " + deploymentInfo.getDeploymentName());
+			UndertowGuicedHandlerExtension.log.fine("Requested to configure guice for web sockets - skipped. - " + deploymentInfo.getDeploymentName());
 		}
 
-		UndertowJWebMPHandlerExtension.log.config("Configuring Resources to be found in META-INF/resources");
-		deploymentInfo.setResourceManager(new ClassPathResourceManager(deploymentInfo.getClassLoader(), "META-INF/resources"));
-
-		UndertowJWebMPHandlerExtension.log.fine("Undertow Configured");
+		UndertowGuicedHandlerExtension.log.config("Configuring Resources to be found in META-INF/resources");
+		deploymentInfo.setResourceManager(new GuicedUndertowResourceManager(classLoader));
+		UndertowGuicedHandlerExtension.log.fine("Undertow Configured");
 	}
 }

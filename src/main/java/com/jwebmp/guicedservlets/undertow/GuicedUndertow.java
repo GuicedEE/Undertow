@@ -1,8 +1,8 @@
-package com.jwebmp.undertow;
+package com.guicedee.guicedservlets.undertow;
 
-import com.jwebmp.guicedinjection.GuiceContext;
-import com.jwebmp.logger.LogFactory;
-import com.jwebmp.undertow.services.UndertowDeploymentConfigurator;
+import com.guicedee.guicedservlets.undertow.services.UndertowDeploymentConfigurator;
+import com.guicedee.guicedinjection.GuiceContext;
+import com.guicedee.logger.LogFactory;
 import io.undertow.Handlers;
 import io.undertow.Undertow;
 import io.undertow.UndertowOptions;
@@ -25,7 +25,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.KeyStore;
 import java.util.ServiceLoader;
-import java.util.Set;
 import java.util.logging.Logger;
 
 import static io.undertow.Handlers.*;
@@ -93,9 +92,11 @@ public class GuicedUndertow
 				                                .setContextPath("/")
 				                                .setDeploymentName(host + "-" + port + ".war");
 
+		ServiceLoader.load(UndertowDeploymentConfigurator.class);
+/*
 		Set<UndertowDeploymentConfigurator> configs = GuiceContext.instance()
-		                                                          .getLoader(UndertowDeploymentConfigurator.class, ServiceLoader.load(UndertowDeploymentConfigurator.class));
-		for (UndertowDeploymentConfigurator config : configs)
+		                                                          .getLoader(UndertowDeploymentConfigurator.class, ServiceLoader.load(UndertowDeploymentConfigurator.class));*/
+		for (UndertowDeploymentConfigurator config : ServiceLoader.load(UndertowDeploymentConfigurator.class))
 		{
 			deploymentInfo = config.configure(deploymentInfo);
 		}
@@ -113,7 +114,7 @@ public class GuicedUndertow
 		PathHandler ph;
 		if (GuicedUndertowWebSocketConfiguration.getWebSocketHandler() != null)
 		{
-			ph = path().addPrefixPath("/jwebmpwssocket", GuicedUndertowWebSocketConfiguration.getWebSocketHandler())
+			ph = path().addPrefixPath("/wssocket", GuicedUndertowWebSocketConfiguration.getWebSocketHandler())
 			           .addPrefixPath("/", encodingHandler);
 		}
 		else

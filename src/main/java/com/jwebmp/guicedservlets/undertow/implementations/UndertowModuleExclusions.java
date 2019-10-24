@@ -1,7 +1,7 @@
-package com.jwebmp.undertow.implementations;
+package com.guicedee.guicedservlets.undertow.implementations;
 
-import com.jwebmp.guicedinjection.interfaces.IGuiceScanJarExclusions;
-import com.jwebmp.guicedinjection.interfaces.IGuiceScanModuleExclusions;
+import com.guicedee.guicedinjection.interfaces.IGuiceScanJarExclusions;
+import com.guicedee.guicedinjection.interfaces.IGuiceScanModuleExclusions;
 
 import javax.validation.constraints.NotNull;
 import java.util.HashSet;
@@ -28,7 +28,7 @@ public class UndertowModuleExclusions
 	public @NotNull Set<String> excludeModules()
 	{
 		Set<String> strings = new HashSet<>();
-		strings.add("com.jwebmp.undertow");
+		strings.add("com.guicedee.jpms.undertow");
 		strings.add("undertow.core");
 		strings.add("undertow.servlet");
 		strings.add("xnio.api");

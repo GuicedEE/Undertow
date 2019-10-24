@@ -1,40 +1,50 @@
-module com.jwebmp.undertow
+import com.guicedee.guicedinjection.interfaces.IGuiceScanJarExclusions;
+import com.guicedee.guicedinjection.interfaces.IGuiceScanModuleExclusions;
+import com.guicedee.guicedservlets.undertow.GuicedUndertowWebSocketConfiguration;
+import com.guicedee.guicedservlets.undertow.UndertowGuicedHandlerExtension;
+import com.guicedee.guicedservlets.undertow.UndertowWebSocketSessionProvider;
+import com.guicedee.guicedservlets.undertow.implementations.UndertowModuleExclusions;
+import com.guicedee.guicedservlets.undertow.services.UndertowDeploymentConfigurator;
+import com.guicedee.guicedservlets.websockets.services.IWebSocketPreConfiguration;
+import com.guicedee.guicedservlets.websockets.services.IWebSocketSessionProvider;
+
+module com.guicedee.guicedservlets.undertow
 {
-	exports com.jwebmp.undertow;
-	exports com.jwebmp.undertow.services;
+	exports com.guicedee.guicedservlets.undertow;
+	exports com.guicedee.guicedservlets.undertow.services;
 
 	requires com.google.guice.extensions.servlet;
 
-	requires transitive undertow.core;
-	requires transitive undertow.servlet;
-	requires transitive javax.servlet.api;
+	requires undertow.core;
+	requires undertow.servlet;
+	requires javax.servlet.api;
 	requires java.logging;
-	requires transitive xnio.api;
-	requires transitive xnio;
-
+	requires xnio.api;
 	requires undertow.websockets.jsr;
 	requires com.google.common;
-	requires transitive com.google.guice;
-	requires transitive javax.inject;
+	requires com.google.guice;
+	requires javax.inject;
 
-	requires transitive com.jwebmp.logmaster;
-	requires transitive com.jwebmp.websockets;
+	requires transitive com.guicedee.logmaster;
+	requires transitive com.guicedee.guicedservlets.websockets;
 
-	requires transitive com.jwebmp.guicedinjection;
-	//requires transitive com.jwebmp.core;
-	requires transitive com.jwebmp.guicedservlets;
+	requires transitive com.guicedee.guicedinjection;
+	//requires transitive com.guicedee.core;
+	requires transitive com.guicedee.guicedservlets;
 	requires java.validation;
 
-	requires jdk.unsupported;
+	requires transitive jdk.unsupported;
+	requires io.github.classgraph;
 
-	provides io.undertow.servlet.ServletExtension with com.jwebmp.undertow.UndertowJWebMPHandlerExtension;
-	provides com.jwebmp.websockets.services.IWebSocketPreConfiguration with com.jwebmp.undertow.GuicedUndertowWebSocketConfiguration;
-	provides com.jwebmp.websockets.services.IWebSocketSessionProvider with com.jwebmp.undertow.UndertowWebSocketSessionProvider;
+	provides io.undertow.servlet.ServletExtension with UndertowGuicedHandlerExtension;
+	provides IWebSocketPreConfiguration with GuicedUndertowWebSocketConfiguration;
+	provides IWebSocketSessionProvider with UndertowWebSocketSessionProvider;
 
-	provides com.jwebmp.guicedinjection.interfaces.IGuiceScanJarExclusions with com.jwebmp.undertow.implementations.UndertowModuleExclusions;
-	provides com.jwebmp.guicedinjection.interfaces.IGuiceScanModuleExclusions with com.jwebmp.undertow.implementations.UndertowModuleExclusions;
+	provides IGuiceScanJarExclusions with UndertowModuleExclusions;
+	provides IGuiceScanModuleExclusions with UndertowModuleExclusions;
 
-	opens com.jwebmp.undertow to com.google.guice;
+	opens com.guicedee.guicedservlets.undertow to com.google.guice;
+	opens com.guicedee.guicedservlets.undertow.services to com.google.guice;
 
-	uses com.jwebmp.undertow.services.UndertowDeploymentConfigurator;
+	uses UndertowDeploymentConfigurator;
 }
