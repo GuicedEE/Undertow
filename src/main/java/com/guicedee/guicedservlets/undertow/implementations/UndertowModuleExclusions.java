@@ -28,7 +28,7 @@ public class UndertowModuleExclusions
 	public @NotNull Set<String> excludeModules()
 	{
 		Set<String> strings = new HashSet<>();
-		strings.add("com.guicedee.jpms.undertow");
+		strings.add("com.guicedee.undertow");
 		strings.add("undertow.core");
 		strings.add("undertow.servlet");
 		strings.add("xnio.api");
