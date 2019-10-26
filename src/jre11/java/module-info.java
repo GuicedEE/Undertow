@@ -1,13 +1,3 @@
-import com.guicedee.guicedinjection.interfaces.IGuiceScanJarExclusions;
-import com.guicedee.guicedinjection.interfaces.IGuiceScanModuleExclusions;
-import com.guicedee.guicedservlets.undertow.GuicedUndertowWebSocketConfiguration;
-import com.guicedee.guicedservlets.undertow.UndertowGuicedHandlerExtension;
-import com.guicedee.guicedservlets.undertow.UndertowWebSocketSessionProvider;
-import com.guicedee.guicedservlets.undertow.implementations.UndertowModuleExclusions;
-import com.guicedee.guicedservlets.undertow.services.UndertowDeploymentConfigurator;
-import com.guicedee.guicedservlets.websockets.services.IWebSocketPreConfiguration;
-import com.guicedee.guicedservlets.websockets.services.IWebSocketSessionProvider;
-
 module com.guicedee.guicedservlets.undertow
 {
 	exports com.guicedee.guicedservlets.undertow;
@@ -36,15 +26,15 @@ module com.guicedee.guicedservlets.undertow
 	requires transitive jdk.unsupported;
 	requires io.github.classgraph;
 
-	provides io.undertow.servlet.ServletExtension with UndertowGuicedHandlerExtension;
-	provides IWebSocketPreConfiguration with GuicedUndertowWebSocketConfiguration;
-	provides IWebSocketSessionProvider with UndertowWebSocketSessionProvider;
+	provides io.undertow.servlet.ServletExtension with com.guicedee.guicedservlets.undertow.UndertowGuicedHandlerExtension;
+	provides com.guicedee.guicedservlets.websockets.services.IWebSocketPreConfiguration with com.guicedee.guicedservlets.undertow.GuicedUndertowWebSocketConfiguration;
+	provides com.guicedee.guicedservlets.websockets.services.IWebSocketSessionProvider with com.guicedee.guicedservlets.undertow.UndertowWebSocketSessionProvider;
 
-	provides IGuiceScanJarExclusions with UndertowModuleExclusions;
-	provides IGuiceScanModuleExclusions with UndertowModuleExclusions;
+	provides com.guicedee.guicedinjection.interfaces.IGuiceScanJarExclusions with com.guicedee.guicedservlets.undertow.implementations.UndertowModuleExclusions;
+	provides com.guicedee.guicedinjection.interfaces.IGuiceScanModuleExclusions with com.guicedee.guicedservlets.undertow.implementations.UndertowModuleExclusions;
 
 	opens com.guicedee.guicedservlets.undertow to com.google.guice;
 	opens com.guicedee.guicedservlets.undertow.services to com.google.guice;
 
-	uses UndertowDeploymentConfigurator;
+	uses com.guicedee.guicedservlets.undertow.services.UndertowDeploymentConfigurator;
 }
