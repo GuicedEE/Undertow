@@ -5,9 +5,9 @@ module com.guicedee.guicedservlets.undertow
 
 	requires com.google.guice.extensions.servlet;
 
-	requires undertow.core;
-	requires undertow.servlet;
-	requires javax.servlet.api;
+	requires transitive undertow.core;
+	requires transitive undertow.servlet;
+	requires transitive javax.servlet.api;
 	requires java.logging;
 	requires xnio.api;
 	requires undertow.websockets.jsr;
@@ -21,7 +21,7 @@ module com.guicedee.guicedservlets.undertow
 	requires transitive com.guicedee.guicedinjection;
 	//requires transitive com.guicedee.core;
 	requires transitive com.guicedee.guicedservlets;
-	requires java.validation;
+	requires transitive java.validation;
 
 	requires transitive jdk.unsupported;
 	requires io.github.classgraph;
