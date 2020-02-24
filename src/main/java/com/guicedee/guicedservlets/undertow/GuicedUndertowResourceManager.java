@@ -46,19 +46,27 @@ public class GuicedUndertowResourceManager
 
 	public GuicedUndertowResourceManager(ClassLoader classLoader)
 	{
-		super(classLoader,"META-INF/resources/");
+		super(classLoader, "META-INF/resources/");
 	}
 
 	@Override
 	public Resource getResource(String path) throws IOException
 	{
-		String pathExt = path.substring(path.lastIndexOf('.'));
-		if(whitelistCriteria.contains(pathExt.toLowerCase()))
+		String pathExt = null;
+		if (path.indexOf('.') >= 0)
+		{
+			pathExt = path.substring(path.lastIndexOf('.'));
+		}
+		else
+		{
+			pathExt = path;
+		}
+
+		if (whitelistCriteria.contains(pathExt.toLowerCase()))
 		{
 			return super.getResource(path);
 		}
 		throw new IOException("Not able to read resource : " + path);
 	}
-
 
 }
