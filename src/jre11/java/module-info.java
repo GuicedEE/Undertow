@@ -30,5 +30,8 @@ module com.guicedee.guicedservlets.undertow
 	provides com.guicedee.guicedservlets.websockets.services.IWebSocketPreConfiguration with com.guicedee.guicedservlets.undertow.GuicedUndertowWebSocketConfiguration;
 	provides com.guicedee.guicedservlets.websockets.services.IWebSocketSessionProvider with com.guicedee.guicedservlets.undertow.UndertowWebSocketSessionProvider;
 
+	opens com.guicedee.guicedservlets.undertow to com.google.guice;
+	opens com.guicedee.guicedservlets.undertow.services to com.google.guice;
+
 	uses com.guicedee.guicedservlets.undertow.services.UndertowDeploymentConfigurator;
 }
