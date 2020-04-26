@@ -30,6 +30,7 @@ public class GuicedUndertowResourceManager
 		whitelistCriteria.add(".png");
 		whitelistCriteria.add(".html");
 		whitelistCriteria.add(".htm");
+		whitelistCriteria.add(".xhtml");
 	}
 
 	private static final ClassPathResourceManager cpr = new ClassPathResourceManager(ClassLoader.getSystemClassLoader());
