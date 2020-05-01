@@ -1,7 +1,6 @@
 package com.guicedee.guicedservlets.undertow;
 
 import com.guicedee.guicedinjection.GuiceContext;
-import com.guicedee.guicedinjection.json.StaticStrings;
 import com.guicedee.guicedservlets.undertow.services.UndertowDeploymentConfigurator;
 import com.guicedee.logger.LogFactory;
 import io.undertow.Handlers;
@@ -32,13 +31,14 @@ import static com.guicedee.guicedinjection.json.StaticStrings.*;
 import static io.undertow.Handlers.*;
 import static io.undertow.servlet.Servlets.*;
 
+@SuppressWarnings({"rawtypes", "unused"})
 public class GuicedUndertow
 {
 	private static final Logger log = LogFactory.getLog("JWebMP Undertow");
 
 	private String serverKeystore;
 	private char[] storePassword;
-	private Class referenceClass;
+	private Class sslStoreReferenceClass;
 	private boolean http2 = true;
 	private String host;
 	private int port;
@@ -56,26 +56,10 @@ public class GuicedUndertow
 		undertow.ssl = ssl;
 		undertow.sslKeyLocation = sslKey;
 		undertow.storePassword = sslPassword;
-		undertow.referenceClass = referenceClass;
+		undertow.sslStoreReferenceClass = referenceClass;
 		undertow.http2 = http2;
 		undertow.serverKeystore = serverKeystore;
 		undertow.serverTruststoreLocation = serverTruststore;
-
-		return undertow.bootMe();
-	}
-
-	public static Undertow boot(String host, int port, boolean ssl, KeyStore serverKeystore, KeyStore serverTruststore, String sslKey, char[] sslPassword, Class referenceClass, boolean http2) throws Exception
-	{
-		GuicedUndertow undertow = new GuicedUndertow();
-		undertow.host = host;
-		undertow.port = port;
-		undertow.ssl = ssl;
-		undertow.sslKeyLocation = sslKey;
-		undertow.storePassword = sslPassword;
-		undertow.referenceClass = referenceClass;
-		undertow.http2 = http2;
-		undertow.sslKeystore = serverKeystore;
-		undertow.trustKeystore = serverTruststore;
 
 		return undertow.bootMe();
 	}
@@ -87,8 +71,8 @@ public class GuicedUndertow
 		{
 			if (sslKeystore == null)
 			{
-				sslContext = GuicedUndertow.createSSLContext(GuicedUndertow.loadKeyStore(referenceClass, serverKeystore, storePassword),
-				                                             GuicedUndertow.loadKeyStore(referenceClass, serverTruststoreLocation, storePassword),
+				sslContext = GuicedUndertow.createSSLContext(GuicedUndertow.loadKeyStore(sslStoreReferenceClass, serverKeystore, storePassword),
+				                                             GuicedUndertow.loadKeyStore(sslStoreReferenceClass, serverTruststoreLocation, storePassword),
 				                                             storePassword);
 			}
 			else
@@ -102,7 +86,7 @@ public class GuicedUndertow
 
 
 		log.fine("Setting XNIO Provider : " + Xnio.getInstance()
-		                                            .getName());
+		                                          .getName());
 		Undertow.Builder server = Undertow.builder();
 		//server.setServerOption(UndertowOptions.MAX_COOKIES, 0);
 		if (http2)
@@ -207,6 +191,23 @@ public class GuicedUndertow
 		}
 	}
 
+	public static Undertow boot(String host, int port, boolean ssl, KeyStore serverKeystore, KeyStore serverTruststore, String sslKey, char[] sslPassword, Class referenceClass, boolean http2) throws Exception
+	{
+		GuicedUndertow undertow = new GuicedUndertow();
+		undertow.host = host;
+		undertow.port = port;
+		undertow.ssl = ssl;
+		undertow.sslKeyLocation = sslKey;
+		undertow.storePassword = sslPassword;
+		undertow.sslStoreReferenceClass = referenceClass;
+		undertow.http2 = http2;
+		undertow.sslKeystore = serverKeystore;
+		undertow.trustKeystore = serverTruststore;
+
+		return undertow.bootMe();
+	}
+
+	@SuppressWarnings("UnusedReturnValue")
 	public static Undertow boot(String host, int port) throws Exception
 	{
 		GuicedUndertow undertow = new GuicedUndertow();
@@ -215,4 +216,124 @@ public class GuicedUndertow
 		return undertow.bootMe();
 	}
 
+	public String getServerKeystore()
+	{
+		return serverKeystore;
+	}
+
+	public GuicedUndertow setServerKeystore(String serverKeystore)
+	{
+		this.serverKeystore = serverKeystore;
+		return this;
+	}
+
+	public char[] getStorePassword()
+	{
+		return storePassword;
+	}
+
+	public GuicedUndertow setStorePassword(char[] storePassword)
+	{
+		this.storePassword = storePassword;
+		return this;
+	}
+
+	public Class getSslStoreReferenceClass()
+	{
+		return sslStoreReferenceClass;
+	}
+
+	public GuicedUndertow setSSLStoresReferenceClass(Class referenceClass)
+	{
+		sslStoreReferenceClass = referenceClass;
+		return this;
+	}
+
+	public boolean isHttp2()
+	{
+		return http2;
+	}
+
+	public GuicedUndertow setHttp2(boolean http2)
+	{
+		this.http2 = http2;
+		return this;
+	}
+
+	public String getHost()
+	{
+		return host;
+	}
+
+	public GuicedUndertow setHost(String host)
+	{
+		this.host = host;
+		return this;
+	}
+
+	public int getPort()
+	{
+		return port;
+	}
+
+	public GuicedUndertow setPort(int port)
+	{
+		this.port = port;
+		return this;
+	}
+
+	public boolean isSsl()
+	{
+		return ssl;
+	}
+
+	public GuicedUndertow setSsl(boolean ssl)
+	{
+		this.ssl = ssl;
+		return this;
+	}
+
+	public String getSslKeyLocation()
+	{
+		return sslKeyLocation;
+	}
+
+	public GuicedUndertow setSslKeyLocation(String sslKeyLocation)
+	{
+		this.sslKeyLocation = sslKeyLocation;
+		return this;
+	}
+
+	public String getServerTruststoreLocation()
+	{
+		return serverTruststoreLocation;
+	}
+
+	public GuicedUndertow setServerTruststoreLocation(String serverTruststoreLocation)
+	{
+		this.serverTruststoreLocation = serverTruststoreLocation;
+		return this;
+	}
+
+	public KeyStore getSslKeystore()
+	{
+		return sslKeystore;
+	}
+
+	public GuicedUndertow setSslKeystore(KeyStore sslKeystore)
+	{
+		this.sslKeystore = sslKeystore;
+		return this;
+	}
+
+	public KeyStore getTrustKeystore()
+	{
+		return trustKeystore;
+	}
+
+	public GuicedUndertow setTrustKeystore(KeyStore trustKeystore)
+	{
+		this.trustKeystore = trustKeystore;
+		return this;
+	}
 }
