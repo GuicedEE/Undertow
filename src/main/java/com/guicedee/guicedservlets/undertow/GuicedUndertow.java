@@ -64,7 +64,7 @@ public class GuicedUndertow
 		return undertow.bootMe();
 	}
 
-	private Undertow bootMe() throws Exception
+	public Undertow bootMe() throws Exception
 	{
 		SSLContext sslContext = null;
 		if (ssl)
