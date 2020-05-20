@@ -17,7 +17,7 @@ module com.guicedee.guicedservlets.undertow
 
 	requires transitive java.validation;
 
-	requires transitive jdk.unsupported;
+	requires static jdk.unsupported;
 
 	provides io.undertow.servlet.ServletExtension with com.guicedee.guicedservlets.undertow.UndertowGuicedHandlerExtension;
 	provides com.guicedee.guicedservlets.websockets.services.IWebSocketPreConfiguration with com.guicedee.guicedservlets.undertow.GuicedUndertowWebSocketConfiguration;
