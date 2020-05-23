@@ -5,15 +5,12 @@ module com.guicedee.guicedservlets.undertow
 
 	requires transitive com.guicedee.guicedservlets.websockets;
 
-
 	requires transitive undertow.core;
 	requires transitive undertow.servlet;
 
 	requires java.logging;
-	requires xnio.api;
 
 	requires undertow.websockets.jsr;
-
 
 	requires transitive java.validation;
 
