@@ -47,8 +47,10 @@ public class GuicedUndertow
 	private String serverTruststoreLocation;
 	private KeyStore sslKeystore;
 	private KeyStore trustKeystore;
+	private Undertow.Builder server = Undertow.builder();
 
-	public static Undertow boot(String host, int port, boolean ssl, String serverKeystore, String serverTruststore, String sslKey, char[] sslPassword, Class referenceClass, boolean http2) throws Exception
+	public static Undertow boot(String host, int port, boolean ssl, String serverKeystore, String serverTruststore, String sslKey, char[] sslPassword, Class referenceClass,
+	                            boolean http2) throws Exception
 	{
 		GuicedUndertow undertow = new GuicedUndertow();
 		undertow.host = host;
@@ -72,23 +74,17 @@ public class GuicedUndertow
 			if (sslKeystore == null)
 			{
 				sslContext = GuicedUndertow.createSSLContext(GuicedUndertow.loadKeyStore(sslStoreReferenceClass, serverKeystore, storePassword),
-				                                             GuicedUndertow.loadKeyStore(sslStoreReferenceClass, serverTruststoreLocation, storePassword),
-				                                             storePassword);
+				                                             GuicedUndertow.loadKeyStore(sslStoreReferenceClass, serverTruststoreLocation, storePassword), storePassword);
 			}
 			else
 			{
-				sslContext = GuicedUndertow.createSSLContext(sslKeystore,
-				                                             trustKeystore,
-				                                             storePassword);
+				sslContext = GuicedUndertow.createSSLContext(sslKeystore, trustKeystore, storePassword);
 			}
 
 		}
 
-
 		log.fine("Setting XNIO Provider : " + Xnio.getInstance()
 		                                          .getName());
-		Undertow.Builder server = Undertow.builder();
-		//server.setServerOption(UndertowOptions.MAX_COOKIES, 0);
 		if (http2)
 		{
 			server.setServerOption(UndertowOptions.ENABLE_HTTP2, true);
@@ -103,10 +99,9 @@ public class GuicedUndertow
 			server.addHttpListener(port, host);
 		}
 
-		DeploymentInfo deploymentInfo = deployment()
-				                                .setClassLoader(GuicedUndertow.class.getClassLoader())
-				                                .setContextPath(STRING_FORWARD_SLASH)
-				                                .setDeploymentName(host + "-" + port + ".war");
+		DeploymentInfo deploymentInfo = deployment().setClassLoader(GuicedUndertow.class.getClassLoader())
+		                                            .setContextPath(STRING_FORWARD_SLASH)
+		                                            .setDeploymentName(host + "-" + port + ".war");
 
 		ServiceLoader.load(UndertowDeploymentConfigurator.class);
 		for (UndertowDeploymentConfigurator config : ServiceLoader.load(UndertowDeploymentConfigurator.class))
@@ -134,13 +129,9 @@ public class GuicedUndertow
 		{
 			ph = path().addPrefixPath(STRING_FORWARD_SLASH, encodingHandler);
 		}
-		server.setHandler(new SessionAttachmentHandler(
-				new LearningPushHandler(100, -1,
-				                        Handlers.header(ph,
-				                                        "x-undertow-transport", ExchangeAttributes.transportProtocol())),
-				new InMemorySessionManager("sessionManager"), new SessionCookieConfig().setSecure(true)
-				                                                                       .setHttpOnly(true)
-		));
+		server.setHandler(new SessionAttachmentHandler(new LearningPushHandler(100, -1, Handlers.header(ph, "x-undertow-transport", ExchangeAttributes.transportProtocol())),
+		                                               new InMemorySessionManager("sessionManager"), new SessionCookieConfig().setSecure(true)
+		                                                                                                                      .setHttpOnly(true)));
 
 		Undertow u = server.build();
 		u.start();
@@ -191,7 +182,8 @@ public class GuicedUndertow
 		}
 	}
 
-	public static Undertow boot(String host, int port, boolean ssl, KeyStore serverKeystore, KeyStore serverTruststore, String sslKey, char[] sslPassword, Class referenceClass, boolean http2) throws Exception
+	public static Undertow boot(String host, int port, boolean ssl, KeyStore serverKeystore, KeyStore serverTruststore, String sslKey, char[] sslPassword, Class referenceClass,
+	                            boolean http2) throws Exception
 	{
 		GuicedUndertow undertow = new GuicedUndertow();
 		undertow.host = host;
@@ -335,5 +327,15 @@ public class GuicedUndertow
 	{
 		this.trustKeystore = trustKeystore;
 		return this;
+	}
+
+	public Undertow.Builder getServer()
+	{
+		return server;
+	}
+
+	public void setServer(Undertow.Builder server)
+	{
+		this.server = server;
 	}
 }
