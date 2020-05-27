@@ -1,5 +1,4 @@
-module com.guicedee.guicedservlets.undertow
-{
+module com.guicedee.guicedservlets.undertow {
 	exports com.guicedee.guicedservlets.undertow;
 	exports com.guicedee.guicedservlets.undertow.services;
 
@@ -8,13 +7,11 @@ module com.guicedee.guicedservlets.undertow
 	requires transitive undertow.core;
 	requires transitive undertow.servlet;
 
-	requires java.logging;
-
 	requires undertow.websockets.jsr;
 
 	requires transitive java.validation;
 
-	requires static jdk.unsupported;
+	//	requires static jdk.unsupported;
 
 	provides io.undertow.servlet.ServletExtension with com.guicedee.guicedservlets.undertow.UndertowGuicedHandlerExtension;
 	provides com.guicedee.guicedservlets.websockets.services.IWebSocketPreConfiguration with com.guicedee.guicedservlets.undertow.GuicedUndertowWebSocketConfiguration;
