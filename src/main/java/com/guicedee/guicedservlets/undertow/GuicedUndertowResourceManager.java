@@ -109,7 +109,7 @@ public class GuicedUndertowResourceManager
 		}
 		if (r == null)
 		{
-			System.out.println("really not found : " + pathOriginal);
+			//System.out.println("really not found : " + pathOriginal);
 		}
 		return r;
 	}
