@@ -1,39 +1,46 @@
 package com.guicedee.guicedservlets.undertow;
 
+import com.guicedee.guicedinjection.GuiceContext;
+import io.github.classgraph.ClassGraph;
+import io.github.classgraph.ResourceList;
+import io.github.classgraph.ScanResult;
 import io.undertow.server.handlers.resource.ClassPathResourceManager;
 import io.undertow.server.handlers.resource.Resource;
+import io.undertow.server.handlers.resource.URLResource;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 public class GuicedUndertowResourceManager
 		extends ClassPathResourceManager
 {
-	private static final Set<String> whitelistCriteria = new HashSet<>();
 
-	private static String resourceLocation = "META-INF/resources/";
+	private static final Set<String> blacklistCriteria = new HashSet<>();
+
+	private static final ClassPathResourceManager cpr = new ClassPathResourceManager(ClassLoader.getSystemClassLoader());
+
+	private static String[] resourceLocations = {"", "META-INF/resources/"};
+	private static ScanResult sr;
 
 	static
 	{
-		whitelistCriteria.add(".css");
-		whitelistCriteria.add(".js");
-		whitelistCriteria.add(".jpg");
-		whitelistCriteria.add(".gif");
-		whitelistCriteria.add(".jpeg");
-		whitelistCriteria.add(".json");
-		whitelistCriteria.add(".woff");
-		whitelistCriteria.add(".woff2");
-		whitelistCriteria.add(".svg");
-		whitelistCriteria.add(".ttf");
-		whitelistCriteria.add(".eot");
-		whitelistCriteria.add(".png");
-		whitelistCriteria.add(".html");
-		whitelistCriteria.add(".htm");
-		whitelistCriteria.add(".xhtml");
+		blacklistCriteria.add(".class");
 	}
 
-	private static final ClassPathResourceManager cpr = new ClassPathResourceManager(ClassLoader.getSystemClassLoader());
+	static
+	{
+		sr = GuiceContext.instance()
+		                 .getScanResult();
+	}
+
+	private ClassLoader classLoader;
 
 	public GuicedUndertowResourceManager(ClassLoader loader, Package p)
 	{
@@ -47,13 +54,16 @@ public class GuicedUndertowResourceManager
 
 	public GuicedUndertowResourceManager(ClassLoader classLoader)
 	{
-		super(classLoader, "META-INF/resources/");
+		super(classLoader, "/");
+		this.classLoader = classLoader;
 	}
 
 	@Override
 	public Resource getResource(String path) throws IOException
 	{
+		String pathOriginal = path;
 		String pathExt = null;
+
 		if (path.indexOf('.') >= 0)
 		{
 			pathExt = path.substring(path.lastIndexOf('.'));
@@ -62,12 +72,34 @@ public class GuicedUndertowResourceManager
 		{
 			pathExt = path;
 		}
-
-		if (whitelistCriteria.contains(pathExt.toLowerCase()))
+		if (blacklistCriteria.contains(pathExt.toLowerCase()))
 		{
-			return super.getResource(path);
+			throw new IOException("Blacklisted Fetch : " + path);
 		}
-		throw new IOException("Not able to read resource : " + path);
-	}
 
+		try
+		{
+			for (String resourceLocation : resourceLocations)
+			{
+				for (io.github.classgraph.Resource resource : sr.getResourcesWithPath(resourceLocation + path))
+				{
+					return new URLResource(resource.getURL(), pathOriginal);
+				}
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		Resource r = super.getResource(pathOriginal);
+		if (r == null)
+		{
+			r = new ClassPathResourceManager(classLoader, "META-INF/resources/").getResource(pathOriginal);
+		}
+		if (r == null)
+		{
+			//System.out.println("really not found : " + pathOriginal);
+		}
+		return r;
+	}
 }
