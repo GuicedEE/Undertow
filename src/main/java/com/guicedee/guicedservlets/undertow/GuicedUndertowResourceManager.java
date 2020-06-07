@@ -18,6 +18,8 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import static com.guicedee.guicedinjection.json.StaticStrings.*;
+
 public class GuicedUndertowResourceManager
 		extends ClassPathResourceManager
 {
@@ -64,9 +66,9 @@ public class GuicedUndertowResourceManager
 		String pathOriginal = path;
 		String pathExt = null;
 
-		if (path.indexOf('.') >= 0)
+		if (path.indexOf(CHAR_DOT) >= 0)
 		{
-			pathExt = path.substring(path.lastIndexOf('.'));
+			pathExt = path.substring(path.lastIndexOf(CHAR_DOT));
 		}
 		else
 		{
@@ -83,6 +85,15 @@ public class GuicedUndertowResourceManager
 			{
 				for (io.github.classgraph.Resource resource : sr.getResourcesWithPath(resourceLocation + path))
 				{
+					URL url = resource.getURL();
+					if (url.toString()
+					       .contains("jrt:/"))
+					{
+						URI uri = URI.create(url.toString()
+						                        .replace("jar:jrt:/", "jrt:/")
+						                        .replace("!", ""));
+						return new URLResource(uri.toURL(), pathOriginal);
+					}
 					return new URLResource(resource.getURL(), pathOriginal);
 				}
 			}
@@ -98,7 +109,7 @@ public class GuicedUndertowResourceManager
 		}
 		if (r == null)
 		{
-			//System.out.println("really not found : " + pathOriginal);
+			System.out.println("really not found : " + pathOriginal);
 		}
 		return r;
 	}

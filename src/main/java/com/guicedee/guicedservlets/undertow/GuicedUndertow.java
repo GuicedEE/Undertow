@@ -99,8 +99,6 @@ public class GuicedUndertow
 			server.addHttpListener(port, host);
 		}
 
-		GuiceContext.inject();
-
 		DeploymentInfo deploymentInfo = deployment().setClassLoader(GuicedUndertow.class.getClassLoader())
 		                                            .setContextPath(STRING_FORWARD_SLASH)
 		                                            .setDeploymentName(host + "-" + port + ".war");
@@ -114,6 +112,8 @@ public class GuicedUndertow
 		DeploymentManager manager = Servlets.defaultContainer()
 		                                    .addDeployment(deploymentInfo);
 
+
+		GuiceContext.inject();
 
 		manager.deploy();
 
