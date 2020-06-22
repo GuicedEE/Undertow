@@ -109,7 +109,11 @@ public class GuicedUndertowResourceManager
 		}
 		if (r == null)
 		{
-			//System.out.println("really not found : " + pathOriginal);
+			if(pathOriginal.startsWith("/resources/"))
+			{
+				pathOriginal = pathOriginal.replaceFirst("/resources/", "");
+				return getResource(pathOriginal);
+			}
 		}
 		return r;
 	}
