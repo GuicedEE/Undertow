@@ -63,6 +63,10 @@ public class GuicedUndertowResourceManager
 	@Override
 	public Resource getResource(String path) throws IOException
 	{
+		if("/RES_NOT_FOUND".equals(path))
+		{
+			System.out.println("Resource not found!");
+		}
 		String pathOriginal = path;
 		String pathExt = null;
 
@@ -72,7 +76,7 @@ public class GuicedUndertowResourceManager
 		}
 		else
 		{
-			pathExt = path;
+			return super.getResource(path);
 		}
 		if (blacklistCriteria.contains(pathExt.toLowerCase()))
 		{
@@ -111,8 +115,13 @@ public class GuicedUndertowResourceManager
 		{
 			if(pathOriginal.startsWith("/resources/"))
 			{
-				pathOriginal = pathOriginal.replaceFirst("/resources/", "");
-				return getResource(pathOriginal);
+				String newPathOriginal = pathOriginal.replaceFirst("/resources/", "");
+				r = getResource(newPathOriginal);
+				if(r == null)
+				{
+					System.out.println("Not found resource : " + pathOriginal);
+				}
+				return r;
 			}
 		}
 		return r;

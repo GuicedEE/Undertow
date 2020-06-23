@@ -71,7 +71,7 @@ public class UndertowGuicedHandlerExtension
 			UndertowGuicedHandlerExtension.log.fine("Requested to configure guice for web sockets - skipped. - " + deploymentInfo.getDeploymentName());
 		}
 
-		UndertowGuicedHandlerExtension.log.config("Configuring Resources to be found in META-INF/resources");
+		UndertowGuicedHandlerExtension.log.config("Configuring Resources to be found by GuicedUndertowResourceManager");
 		deploymentInfo.setResourceManager(new GuicedUndertowResourceManager(classLoader));
 		UndertowGuicedHandlerExtension.log.fine("Undertow Configured");
 	}
