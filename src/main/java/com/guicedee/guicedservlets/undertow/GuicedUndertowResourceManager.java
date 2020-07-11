@@ -27,9 +27,6 @@ public class GuicedUndertowResourceManager
 {
 
 	private static final Set<String> blacklistCriteria = new HashSet<>();
-
-	private static final ClassPathResourceManager cpr = new ClassPathResourceManager(ClassLoader.getSystemClassLoader());
-
 	private static String[] resourceLocations = {"", "META-INF/resources/"};
 
 	static
