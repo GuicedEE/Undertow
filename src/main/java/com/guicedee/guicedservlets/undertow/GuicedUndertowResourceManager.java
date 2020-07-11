@@ -1,6 +1,7 @@
 package com.guicedee.guicedservlets.undertow;
 
 import com.guicedee.guicedinjection.GuiceContext;
+import com.guicedee.logger.LogFactory;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ResourceList;
 import io.github.classgraph.ScanResult;
@@ -16,6 +17,7 @@ import java.net.URL;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.regex.Pattern;
 
 import static com.guicedee.guicedinjection.json.StaticStrings.*;
@@ -29,17 +31,16 @@ public class GuicedUndertowResourceManager
 	private static final ClassPathResourceManager cpr = new ClassPathResourceManager(ClassLoader.getSystemClassLoader());
 
 	private static String[] resourceLocations = {"", "META-INF/resources/"};
-	private static ScanResult sr;
 
 	static
 	{
 		blacklistCriteria.add(".class");
 	}
 
-	static
+	private ScanResult getScanResult()
 	{
-		sr = GuiceContext.instance()
-		                 .getScanResult();
+		return GuiceContext.instance()
+		                   .getScanResult();
 	}
 
 	private ClassLoader classLoader;
@@ -87,15 +88,20 @@ public class GuicedUndertowResourceManager
 		{
 			for (String resourceLocation : resourceLocations)
 			{
-				for (io.github.classgraph.Resource resource : sr.getResourcesWithPath(resourceLocation + path))
+				java.util.Collection<io.github.classgraph.Resource> resources =getScanResult().getResourcesWithPath(resourceLocation + path);
+				if(resources != null)
+				for (io.github.classgraph.Resource resource : resources)
 				{
 					URL url = resource.getURL();
+					if(url == null)
+					{
+						LogFactory.getLog(getClass()).log(Level.SEVERE,"Cannot find through scan result -" + pathOriginal);
+						continue;
+					}
 					if (url.toString()
 					       .contains("jrt:/"))
 					{
-						URI uri = URI.create(url.toString()
-						                        .replace("jar:jrt:/", "jrt:/")
-						                        .replace("!", ""));
+						URI uri = URI.create(url.toString());
 						return new URLResource(uri.toURL(), pathOriginal);
 					}
 					return new URLResource(resource.getURL(), pathOriginal);
@@ -104,7 +110,7 @@ public class GuicedUndertowResourceManager
 		}
 		catch (Exception e)
 		{
-			e.printStackTrace();
+			LogFactory.getLog(getClass()).log(Level.FINE,"No scan result -" + pathOriginal,e);
 		}
 		Resource r = super.getResource(pathOriginal);
 		if (r == null)
