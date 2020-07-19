@@ -27,7 +27,7 @@ public class GuicedUndertowResourceManager
 {
 
 	private static final Set<String> blacklistCriteria = new HashSet<>();
-	private static String[] resourceLocations = {"", "META-INF/resources/"};
+	private static String[] resourceLocations = {""};
 
 	static
 	{
@@ -65,12 +65,14 @@ public class GuicedUndertowResourceManager
 		{
 			System.out.println("Resource not found!");
 		}
-		String pathOriginal = path;
+		String pathOriginal = path.startsWith("/") ? path.substring(1) : path;
+		String pathDir = pathOriginal.indexOf('/') < 0 ? "" : pathOriginal.substring(0,pathOriginal.lastIndexOf('/'));
+		String pathName = pathOriginal.indexOf('/') < 0 ? pathOriginal : pathOriginal.substring(pathOriginal.lastIndexOf('/') + 1);
 		String pathExt = null;
 
 		if (path.indexOf(CHAR_DOT) >= 0)
 		{
-			pathExt = path.substring(path.lastIndexOf(CHAR_DOT));
+			pathExt = pathName.substring(pathName.lastIndexOf(CHAR_DOT));
 		}
 		else
 		{
@@ -85,7 +87,12 @@ public class GuicedUndertowResourceManager
 		{
 			for (String resourceLocation : resourceLocations)
 			{
-				java.util.Collection<io.github.classgraph.Resource> resources =getScanResult().getResourcesWithPath(resourceLocation + path);
+				if(!pathDir.isEmpty())
+					pathDir = pathDir + "/";
+
+				String newPattern = ".*(" + resourceLocation + "" + "" + pathDir + pathName+ ")";
+				Pattern pattern = Pattern.compile(newPattern);
+				java.util.Collection<io.github.classgraph.Resource> resources =getScanResult().getResourcesMatchingPattern(pattern);
 				if(resources != null)
 				for (io.github.classgraph.Resource resource : resources)
 				{
@@ -94,12 +101,6 @@ public class GuicedUndertowResourceManager
 					{
 						LogFactory.getLog(getClass()).log(Level.SEVERE,"Cannot find through scan result -" + pathOriginal);
 						continue;
-					}
-					if (url.toString()
-					       .contains("jrt:/"))
-					{
-						URI uri = URI.create(url.toString());
-						return new URLResource(uri.toURL(), pathOriginal);
 					}
 					return new URLResource(resource.getURL(), pathOriginal);
 				}
