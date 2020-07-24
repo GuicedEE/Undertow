@@ -1,6 +1,7 @@
 package com.guicedee.guicedservlets.undertow;
 
 import com.guicedee.guicedinjection.GuiceContext;
+import com.guicedee.guicedinjection.interfaces.IDefaultService;
 import com.guicedee.guicedservlets.undertow.services.UndertowDeploymentConfigurator;
 import com.guicedee.logger.LogFactory;
 import io.undertow.Handlers;
@@ -103,8 +104,8 @@ public class GuicedUndertow
 		                                            .setContextPath(STRING_FORWARD_SLASH)
 		                                            .setDeploymentName(host + "-" + port + ".war");
 
-		ServiceLoader.load(UndertowDeploymentConfigurator.class);
-		for (UndertowDeploymentConfigurator config : ServiceLoader.load(UndertowDeploymentConfigurator.class))
+		java.util.Set<UndertowDeploymentConfigurator> confs = IDefaultService.loaderToSetNoInjection(ServiceLoader.load(UndertowDeploymentConfigurator.class));
+		for (UndertowDeploymentConfigurator config : confs)
 		{
 			deploymentInfo = config.configure(deploymentInfo);
 		}
