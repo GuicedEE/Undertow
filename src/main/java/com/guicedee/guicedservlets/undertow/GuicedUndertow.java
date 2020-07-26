@@ -26,6 +26,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.KeyStore;
 import java.util.ServiceLoader;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static com.guicedee.guicedinjection.json.StaticStrings.*;
@@ -112,15 +113,17 @@ public class GuicedUndertow
 
 		DeploymentManager manager = Servlets.defaultContainer()
 		                                    .addDeployment(deploymentInfo);
-
-
-		GuiceContext.inject();
-
+		try {
+			GuiceContext.inject();
+		}catch(Throwable T)
+		{
+			log.log(Level.SEVERE, "Unable to start injections", T);
+		}
 		manager.deploy();
 
-		HttpHandler jwebSwingHandler = manager.start();
+		HttpHandler guicedHandler = manager.start();
 		HttpHandler encodingHandler = new EncodingHandler.Builder().build(null)
-		                                                           .wrap(jwebSwingHandler);
+		                                                           .wrap(guicedHandler);
 
 		PathHandler ph;
 		if (GuicedUndertowWebSocketConfiguration.getWebSocketHandler() != null)
