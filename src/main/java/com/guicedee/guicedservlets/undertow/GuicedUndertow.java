@@ -36,7 +36,7 @@ import static io.undertow.servlet.Servlets.*;
 @SuppressWarnings({"rawtypes", "unused"})
 public class GuicedUndertow
 {
-	private static final Logger log = LogFactory.getLog("JWebMP Undertow");
+	private static final Logger log = LogFactory.getLog("Guiced Undertow");
 
 	private String serverKeystore;
 	private char[] storePassword;
