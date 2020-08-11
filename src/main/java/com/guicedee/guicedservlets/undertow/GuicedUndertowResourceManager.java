@@ -26,6 +26,9 @@ public class GuicedUndertowResourceManager
     private static final Set<String> rejectListCriteria = new HashSet<>();
     private static final Map<String,Resource> resourceCache = new ConcurrentHashMap<>();
 
+    private ClassLoader loader;
+    private ClassPathResourceManager metaInfManager;
+
     static {
         rejectListCriteria.add(".class");
         rejectListCriteria.add(".map");
@@ -38,14 +41,20 @@ public class GuicedUndertowResourceManager
 
     public GuicedUndertowResourceManager(ClassLoader loader, Package p) {
         super(loader, p);
+        this.loader = loader;
+        this.metaInfManager = new ClassPathResourceManager(loader, "META-INF/resources/");
     }
 
     public GuicedUndertowResourceManager(ClassLoader classLoader, String prefix) {
         super(classLoader, prefix);
+        this.loader = classLoader;
+        this.metaInfManager = new ClassPathResourceManager(loader, "META-INF/resources/");
     }
 
     public GuicedUndertowResourceManager(ClassLoader classLoader) {
         super(classLoader, STRING_FORWARD_SLASH);
+        this.loader = classLoader;
+        this.metaInfManager = new ClassPathResourceManager(loader, "META-INF/resources/");
     }
 
     @Override
@@ -103,8 +112,12 @@ public class GuicedUndertowResourceManager
             LogFactory.getLog(getClass()).log(Level.FINE, "No scan result -" + pathOriginal, e);
         }
         Resource r = super.getResource(path);
+        if(r == null)
+        {
+            r = metaInfManager.getResource(pathDir + pathName );
+        }
         if(r != null) {
-            resourceCache.put(pathOriginal, super.getResource(path));
+            resourceCache.put(pathOriginal, r);
             return resourceCache.get(pathOriginal);
         }else {
             LogFactory.getLog(getClass()).log(Level.WARNING, "Resource not found -" + pathOriginal);
