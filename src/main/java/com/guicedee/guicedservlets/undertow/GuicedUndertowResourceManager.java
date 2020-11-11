@@ -84,9 +84,9 @@ public class GuicedUndertowResourceManager
             throw new IOException("Rejected Fetch : " + path);
         }
         try {
-            if (pathName.startsWith("/javax.faces.resource/")) {
+            if (pathName.startsWith("/jakarta.faces.resource/")) {
                 pathName = pathName.substring(22);
-            } else if (pathName.startsWith("javax.faces.resource/")) {
+            } else if (pathName.startsWith("jakarta.faces.resource/")) {
                 pathName = pathName.substring(21);
             }
             String newPattern;

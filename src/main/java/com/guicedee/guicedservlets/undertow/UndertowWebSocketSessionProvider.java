@@ -3,7 +3,7 @@ package com.guicedee.guicedservlets.undertow;
 import com.guicedee.guicedservlets.GuicedServletSessionManager;
 import com.guicedee.guicedservlets.websockets.services.IWebSocketSessionProvider;
 
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpSession;
 
 public class UndertowWebSocketSessionProvider implements IWebSocketSessionProvider
 {
