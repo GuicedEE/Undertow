@@ -9,7 +9,7 @@ module com.guicedee.guicedservlets.undertow {
 
 	requires undertow.websockets.jsr;
 
-	requires transitive java.validation;
+	requires transitive jakarta.validation;
 
 	//	requires jdk.unsupported;
 
