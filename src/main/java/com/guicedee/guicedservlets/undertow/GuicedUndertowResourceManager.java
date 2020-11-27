@@ -81,12 +81,18 @@ public class GuicedUndertowResourceManager
             return null;
         }
         if (rejectListCriteria.contains(pathExt.toLowerCase())) {
-            throw new IOException("Rejected Fetch : " + path);
+            LogFactory.getLog(getClass()).log(Level.FINE, "Rejected request - banned criteria - " + pathOriginal);
+            return null;
         }
         try {
             if (pathName.startsWith("/jakarta.faces.resource/")) {
                 pathName = pathName.substring(22);
             } else if (pathName.startsWith("jakarta.faces.resource/")) {
+                pathName = pathName.substring(21);
+            }
+            if (pathName.startsWith("/javax.faces.resource/")) {
+                pathName = pathName.substring(22);
+            } else if (pathName.startsWith("javax.faces.resource/")) {
                 pathName = pathName.substring(21);
             }
             String newPattern;
@@ -102,14 +108,14 @@ public class GuicedUndertowResourceManager
                 for (io.github.classgraph.Resource resource : resources) {
                     URL url = resource.getURL();
                     if (url == null) {
-                        LogFactory.getLog(getClass()).log(Level.SEVERE, "Cannot find through scan result -" + pathOriginal);
+                        LogFactory.getLog(getClass()).log(Level.FINE, "Cannot find through scan result -" + pathOriginal);
                         continue;
                     }
                     resourceCache.put(pathOriginal, new URLResource(resource.getURL(), pathOriginal));
                     return resourceCache.get(pathOriginal);
                 }
         } catch (Exception e) {
-            LogFactory.getLog(getClass()).log(Level.FINE, "No scan result -" + pathOriginal, e);
+            LogFactory.getLog(getClass()).log(Level.FINE, "No scan result -" + pathOriginal);
         }
         Resource r = super.getResource(path);
         if(r == null)
