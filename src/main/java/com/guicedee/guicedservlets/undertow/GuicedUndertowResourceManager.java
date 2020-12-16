@@ -31,7 +31,6 @@ public class GuicedUndertowResourceManager
 
     static {
         rejectListCriteria.add(".class");
-        rejectListCriteria.add(".map");
     }
 
     private ScanResult getScanResult() {
