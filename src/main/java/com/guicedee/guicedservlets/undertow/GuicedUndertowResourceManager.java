@@ -125,7 +125,7 @@ public class GuicedUndertowResourceManager
             resourceCache.put(pathOriginal, r);
             return resourceCache.get(pathOriginal);
         }else {
-            LogFactory.getLog(getClass()).log(Level.WARNING, "Resource not found -" + pathOriginal);
+            LogFactory.getLog(getClass()).log(Level.FINER, "Resource not found -" + pathOriginal);
             return null;
         }
     }
