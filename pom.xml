@@ -48,6 +48,15 @@
             <artifactId>jboss-logmanager</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.guicedee.services</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.guicedee.services</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+        </dependency>
     </dependencies>
     <scm>
         <url>https://github.com/GedMarc/JWebMP-Undertow.git</url>
