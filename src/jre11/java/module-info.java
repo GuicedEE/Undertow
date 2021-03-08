@@ -10,7 +10,7 @@ module com.guicedee.guicedservlets.undertow {
 	requires undertow.websockets.jsr;
 
 	requires transitive jakarta.validation;
-	requires static java.servlet;
+	requires static jakarta.servlet;
 	//requires static jakarta.persistence;
 	requires static jakarta.xml.bind;
 
