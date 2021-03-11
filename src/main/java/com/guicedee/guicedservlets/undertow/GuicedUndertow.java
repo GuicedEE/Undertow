@@ -1,5 +1,6 @@
 package com.guicedee.guicedservlets.undertow;
 
+import com.google.common.base.Strings;
 import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedinjection.interfaces.IDefaultService;
 import com.guicedee.guicedservlets.undertow.services.UndertowDeploymentConfigurator;
@@ -22,9 +23,13 @@ import org.xnio.Xnio;
 
 import javax.net.ssl.*;
 import java.io.InputStream;
+import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.security.KeyStore;
+import java.security.*;
+import java.security.cert.Certificate;
+import java.security.cert.X509Certificate;
+import java.util.Enumeration;
 import java.util.ServiceLoader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -40,19 +45,27 @@ public class GuicedUndertow
 
 	private String serverKeystore;
 	private char[] storePassword;
+
 	private Class sslStoreReferenceClass;
+
 	private boolean http2 = true;
+
 	private String host;
 	private int port;
 	private boolean ssl;
+
 	private String sslKeyLocation;
 	private String serverTruststoreLocation;
+	private String sslKeyName;
+
 	private KeyStore sslKeystore;
 	private KeyStore trustKeystore;
+
 	private Undertow.Builder server = Undertow.builder();
 
-	public static Undertow boot(String host, int port, boolean ssl, String serverKeystore, String serverTruststore, String sslKey, char[] sslPassword, Class referenceClass,
-	                            boolean http2) throws Exception
+
+	public static Undertow boot(String host, int port, boolean ssl, KeyStore serverKeystore, KeyStore serverTruststore, String sslKey, char[] sslPassword, Class referenceClass,
+								boolean http2) throws Exception
 	{
 		GuicedUndertow undertow = new GuicedUndertow();
 		undertow.host = host;
@@ -62,8 +75,45 @@ public class GuicedUndertow
 		undertow.storePassword = sslPassword;
 		undertow.sslStoreReferenceClass = referenceClass;
 		undertow.http2 = http2;
-		undertow.serverKeystore = serverKeystore;
-		undertow.serverTruststoreLocation = serverTruststore;
+		undertow.sslKeystore = serverKeystore;
+		undertow.trustKeystore = serverTruststore;
+
+		return undertow.bootMe();
+	}
+
+	@SuppressWarnings("UnusedReturnValue")
+	public static Undertow boot(String host, int port) throws Exception
+	{
+		GuicedUndertow undertow = new GuicedUndertow();
+		undertow.host = host;
+		undertow.port = port;
+		return undertow.bootMe();
+	}
+
+	public static Undertow boot(String host, int port, boolean ssl, String serverKeystoreSystemPropertyName, String serverTruststoreSystemPropertyName, String sslKeyLocation,
+								char[] sslPassword,
+								Class referenceClass,
+								boolean http2) throws Exception
+	{
+		return boot(host, port, ssl, serverKeystoreSystemPropertyName, serverTruststoreSystemPropertyName, sslKeyLocation,null, sslPassword, referenceClass, http2);
+	}
+
+	public static Undertow boot(String host, int port, boolean ssl, String serverKeystoreSystemPropertyName, String serverTruststoreSystemPropertyName, String sslKeyLocation,String sslAliasName,
+								char[] sslPassword,
+								Class referenceClass,
+	                            boolean http2) throws Exception
+	{
+		GuicedUndertow undertow = new GuicedUndertow();
+		undertow.host = host;
+		undertow.port = port;
+		undertow.ssl = ssl;
+		undertow.sslKeyLocation = sslKeyLocation;
+		undertow.storePassword = sslPassword;
+		undertow.sslStoreReferenceClass = referenceClass;
+		undertow.http2 = http2;
+		undertow.serverKeystore = serverKeystoreSystemPropertyName;
+		undertow.serverTruststoreLocation = serverTruststoreSystemPropertyName;
+		undertow.sslKeyName = sslAliasName;
 
 		return undertow.bootMe();
 	}
@@ -75,15 +125,12 @@ public class GuicedUndertow
 		{
 			if (sslKeystore == null)
 			{
-				sslContext = GuicedUndertow.createSSLContext(GuicedUndertow.loadKeyStore(sslStoreReferenceClass, serverKeystore, storePassword),
-				                                             GuicedUndertow.loadKeyStore(sslStoreReferenceClass, serverTruststoreLocation, storePassword), storePassword);
+				sslKeystore = GuicedUndertow.loadKeyStore(sslStoreReferenceClass, serverKeystore, storePassword);
+				trustKeystore = GuicedUndertow.loadKeyStore(sslStoreReferenceClass, serverTruststoreLocation, storePassword);
 			}
-			else
-			{
-				sslContext = GuicedUndertow.createSSLContext(sslKeystore, trustKeystore, storePassword);
-			}
-
 		}
+
+		sslContext = createSSLContext(sslKeystore, trustKeystore, storePassword);
 
 		log.fine("Setting XNIO Provider : " + Xnio.getInstance()
 		                                          .getName());
@@ -92,6 +139,7 @@ public class GuicedUndertow
 			server.setServerOption(UndertowOptions.ENABLE_HTTP2, true);
 			server.setServerOption(UndertowOptions.HTTP2_SETTINGS_ENABLE_PUSH, true);
 		}
+
 		if (ssl)
 		{
 			server.addHttpsListener(port, host, sslContext);
@@ -144,7 +192,7 @@ public class GuicedUndertow
 		return u;
 	}
 
-	private static SSLContext createSSLContext(KeyStore keyStore, KeyStore trustStore, char[] password) throws Exception
+	private SSLContext createSSLContext(KeyStore keyStore, KeyStore trustStore, char[] password) throws Exception
 	{
 		KeyManager[] keyManagers;
 		KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
@@ -158,7 +206,34 @@ public class GuicedUndertow
 
 		SSLContext sslContext;
 		sslContext = SSLContext.getInstance("TLS");
-		sslContext.init(keyManagers, trustManagers, null);
+
+
+		if(!Strings.isNullOrEmpty(sslKeyName))
+		{
+			Enumeration<String> aliases = trustKeystore.aliases();
+			X509Certificate xCert = null;
+			while (aliases.hasMoreElements()) {
+				String alias = aliases.nextElement();
+				if (!alias.equalsIgnoreCase(sslKeyName)) {
+					continue;
+				}
+				Key key = trustKeystore.getKey(alias, storePassword);
+				final Certificate cert = trustKeystore.getCertificate(alias);
+				if (!(cert instanceof X509Certificate)) {
+					continue;
+				}
+				xCert = (X509Certificate) cert;
+			}
+			if (xCert == null) {
+				throw new RuntimeException("Cannot load that given alias as a private key cert");
+			}
+			KeyManager[] keys = new KeyManager[] { new FilteredKeyManager((X509KeyManager) keyManagerFactory.getKeyManagers()[0], xCert, sslKeyName) };
+			sslContext.init(keys, trustManagerFactory.getTrustManagers(), new SecureRandom());
+		}
+		else
+		{
+			sslContext.init(keyManagers, trustManagers, null);
+		}
 
 		return sslContext;
 	}
@@ -188,31 +263,6 @@ public class GuicedUndertow
 		}
 	}
 
-	public static Undertow boot(String host, int port, boolean ssl, KeyStore serverKeystore, KeyStore serverTruststore, String sslKey, char[] sslPassword, Class referenceClass,
-	                            boolean http2) throws Exception
-	{
-		GuicedUndertow undertow = new GuicedUndertow();
-		undertow.host = host;
-		undertow.port = port;
-		undertow.ssl = ssl;
-		undertow.sslKeyLocation = sslKey;
-		undertow.storePassword = sslPassword;
-		undertow.sslStoreReferenceClass = referenceClass;
-		undertow.http2 = http2;
-		undertow.sslKeystore = serverKeystore;
-		undertow.trustKeystore = serverTruststore;
-
-		return undertow.bootMe();
-	}
-
-	@SuppressWarnings("UnusedReturnValue")
-	public static Undertow boot(String host, int port) throws Exception
-	{
-		GuicedUndertow undertow = new GuicedUndertow();
-		undertow.host = host;
-		undertow.port = port;
-		return undertow.bootMe();
-	}
 
 	public String getServerKeystore()
 	{
@@ -343,5 +393,73 @@ public class GuicedUndertow
 	public void setServer(Undertow.Builder server)
 	{
 		this.server = server;
+	}
+
+	public String getSslKeyName() {
+		return sslKeyName;
+	}
+
+	public GuicedUndertow setSslKeyName(String sslKeyName) {
+		this.sslKeyName = sslKeyName;
+		return this;
+	}
+
+	/**
+	 * filters the SSLCertificate we want to use for SSL <code>
+	 * KeyManagerFactory kmf = KeyManagerFactory.getInstance("X509");
+	 * kmf.init(keyStore, null);
+	 * String SSLCertificateKeyStoreAlias = keyStore.getCertificateAlias(sslCertificate);
+	 * KeyManager[] keyManagers = new KeyManager[] { new FilteredKeyManager((X509KeyManager)kmf.getKeyManagers()[0], sslCertificate, SSLCertificateKeyStoreAlias) };
+	 * </code>
+	 */
+	static class FilteredKeyManager implements X509KeyManager {
+
+		private final X509KeyManager originatingKeyManager;
+		private final X509Certificate sslCertificate;
+		private final String SSLCertificateKeyStoreAlias;
+
+		/**
+		 * @param originatingKeyManager,
+		 *            original X509KeyManager
+		 * @param sslCertificate,
+		 *            X509Certificate to use
+		 * @param SSLCertificateKeyStoreAlias,
+		 *            Alias of the certificate in the provided keystore
+		 */
+		public FilteredKeyManager(X509KeyManager originatingKeyManager, X509Certificate sslCertificate, String SSLCertificateKeyStoreAlias) {
+			this.originatingKeyManager = originatingKeyManager;
+			this.sslCertificate = sslCertificate;
+			this.SSLCertificateKeyStoreAlias = SSLCertificateKeyStoreAlias;
+		}
+
+		@Override
+		public String chooseClientAlias(String[] keyType, Principal[] issuers, Socket socket) {
+			return SSLCertificateKeyStoreAlias;
+		}
+
+		@Override
+		public String chooseServerAlias(String keyType, Principal[] issuers, Socket socket) {
+			return originatingKeyManager.chooseServerAlias(keyType, issuers, socket);
+		}
+
+		@Override
+		public X509Certificate[] getCertificateChain(String alias) {
+			return new X509Certificate[] { sslCertificate };
+		}
+
+		@Override
+		public String[] getClientAliases(String keyType, Principal[] issuers) {
+			return originatingKeyManager.getClientAliases(keyType, issuers);
+		}
+
+		@Override
+		public String[] getServerAliases(String keyType, Principal[] issuers) {
+			return originatingKeyManager.getServerAliases(keyType, issuers);
+		}
+
+		@Override
+		public PrivateKey getPrivateKey(String alias) {
+			return originatingKeyManager.getPrivateKey(alias);
+		}
 	}
 }
