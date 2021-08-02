@@ -114,7 +114,7 @@ public class GuicedUndertowResourceManager
                     return resourceCache.get(pathOriginal);
                 }
         } catch (Exception e) {
-            LogFactory.getLog(getClass()).log(Level.FINE, "No scan result -" + pathOriginal);
+            LogFactory.getLog(getClass()).log(Level.FINER, "No scan result -" + pathOriginal);
         }
         Resource r = super.getResource(path);
         if(r == null)
