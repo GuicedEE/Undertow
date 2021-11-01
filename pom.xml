@@ -12,7 +12,7 @@
     <artifactId>guiced-undertow</artifactId>
 
     <packaging>jar</packaging>
-
+    <version>0.0.0_0-SNAPSHOT</version>
     <name>Guiced Undertow</name>
     <description>Allows instant atmopshere push usage in Embedded Containers mainly Undertow, and Undertow-Enabled such as JBoss, EAP, Jersey etc.</description>
     <url>https://github.com/GedMarc/JWebSwing-Undertow</url>
