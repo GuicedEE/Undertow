@@ -1,3 +1,5 @@
+import com.guicedee.guicedservlets.undertow.*;
+
 module com.guicedee.guicedservlets.undertow {
 	exports com.guicedee.guicedservlets.undertow;
 	exports com.guicedee.guicedservlets.undertow.services;
@@ -19,6 +21,8 @@ module com.guicedee.guicedservlets.undertow {
 	provides io.undertow.servlet.ServletExtension with com.guicedee.guicedservlets.undertow.UndertowGuicedHandlerExtension;
 	provides com.guicedee.guicedservlets.websockets.services.IWebSocketPreConfiguration with com.guicedee.guicedservlets.undertow.GuicedUndertowWebSocketConfiguration;
 	provides com.guicedee.guicedservlets.websockets.services.IWebSocketSessionProvider with com.guicedee.guicedservlets.undertow.UndertowWebSocketSessionProvider;
+	
+	provides com.guicedee.guicedservlets.undertow.services.UndertowDeploymentConfigurator with GuicedServletListenersRegister;
 
 	opens com.guicedee.guicedservlets.undertow to com.google.guice;
 	opens com.guicedee.guicedservlets.undertow.services to com.google.guice;
