@@ -72,6 +72,8 @@ public class UndertowGuicedHandlerExtension
 		}
 
 		UndertowGuicedHandlerExtension.log.config("Configuring Resources to be found by GuicedUndertowResourceManager");
+		
+		
 		deploymentInfo.setResourceManager(new GuicedUndertowResourceManager(classLoader));
 		UndertowGuicedHandlerExtension.log.fine("Undertow Configured");
 	}
