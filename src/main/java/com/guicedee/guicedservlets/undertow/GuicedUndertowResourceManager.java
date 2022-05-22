@@ -25,7 +25,8 @@ public class GuicedUndertowResourceManager
 	private static final Map<String, Resource> resourceCache = new ConcurrentHashMap<>();
 	
 	private ClassLoader loader;
-	private ClassPathResourceManager metaInfManager;
+	private static ResourceManager resourceManager;
+	private static ResourceManager pathManager;
 	
 	static
 	{
@@ -45,21 +46,28 @@ public class GuicedUndertowResourceManager
 	{
 		super(loader, p);
 		this.loader = loader;
-		this.metaInfManager = new ClassPathResourceManager(loader, "META-INF/resources/");
+			resourceManager = new ClassPathResourceManager(loader, "META-INF/resources/");
+		
 	}
 	
 	public GuicedUndertowResourceManager(ClassLoader classLoader, String prefix)
 	{
 		super(classLoader, prefix);
 		this.loader = classLoader;
-		this.metaInfManager = new ClassPathResourceManager(loader, "META-INF/resources/");
+			resourceManager = new ClassPathResourceManager(loader, "META-INF/resources/");
+		
 	}
 	
 	public GuicedUndertowResourceManager(ClassLoader classLoader)
 	{
 		super(classLoader, STRING_FORWARD_SLASH);
 		this.loader = classLoader;
-		this.metaInfManager = new ClassPathResourceManager(loader, "META-INF/resources/");
+			resourceManager = new ClassPathResourceManager(loader, "META-INF/resources/");
+	}
+	
+	public static void setPathManager(ResourceManager pathManager)
+	{
+		GuicedUndertowResourceManager.pathManager = pathManager;
 	}
 	
 	@Override
@@ -112,6 +120,16 @@ public class GuicedUndertowResourceManager
 			          .log(Level.FINE, "Rejected request - banned criteria - " + pathOriginal);
 			return null;
 		}
+		if (pathManager != null)
+		{
+			//fixed path fetching
+			Resource r = pathManager.getResource(path);
+			if (r != null)
+			{
+				resourceCache.put(pathOriginal, r);
+				return r;
+			}
+		}
 		try
 		{
 			String newPattern;
@@ -150,7 +168,7 @@ public class GuicedUndertowResourceManager
 		Resource r = super.getResource(path);
 		if (r == null)
 		{
-			r = metaInfManager.getResource(pathDir + pathName);
+			r = resourceManager.getResource(pathDir + pathName);
 		}
 		
 		if (r != null)
@@ -178,6 +196,17 @@ public class GuicedUndertowResourceManager
 				}
 			}
 			
+			if (pathManager != null)
+			{
+				//fixed path fetching
+				Resource indexHtmlResource = pathManager.getResource("index.html");
+				if (indexHtmlResource != null)
+				{
+					resourceCache.put(pathOriginal, indexHtmlResource);
+					return indexHtmlResource;
+				}
+			}
+			
 			LogFactory.getLog(getClass())
 			          .log(Level.FINER, "Resource not found -" + pathOriginal);
 			return null;
@@ -185,13 +214,14 @@ public class GuicedUndertowResourceManager
 	}
 	
 	private Map<Pattern, ResourceList> resourceListMap = new HashMap<>();
+	
 	private ResourceList getResourcesMatchingPattern(Pattern pattern)
 	{
-		if(resourceListMap.containsKey(pattern))
+		if (resourceListMap.containsKey(pattern))
 		{
 			return resourceListMap.get(pattern);
 		}
-		ResourceList rl =  getScanResult().getResourcesMatchingPattern(pattern);
+		ResourceList rl = getScanResult().getResourcesMatchingPattern(pattern);
 		resourceListMap.put(pattern, rl);
 		return rl;
 	}
