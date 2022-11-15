@@ -196,7 +196,7 @@ public class GuicedUndertowResourceManager
 				}
 			}
 			
-			if (pathManager != null)
+			/*if (pathManager != null)
 			{
 				//fixed path fetching
 				Resource indexHtmlResource = pathManager.getResource("index.html");
@@ -205,7 +205,7 @@ public class GuicedUndertowResourceManager
 					resourceCache.put(pathOriginal, indexHtmlResource);
 					return indexHtmlResource;
 				}
-			}
+			}*/
 			
 			LogFactory.getLog(getClass())
 			          .log(Level.FINER, "Resource not found -" + pathOriginal);
