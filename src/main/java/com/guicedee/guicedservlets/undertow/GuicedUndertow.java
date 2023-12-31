@@ -1,10 +1,10 @@
 package com.guicedee.guicedservlets.undertow;
 
 import com.google.common.base.*;
+import com.google.inject.Guice;
 import com.guicedee.guicedinjection.*;
 import com.guicedee.guicedinjection.interfaces.*;
 import com.guicedee.guicedservlets.undertow.services.*;
-import com.guicedee.logger.*;
 import io.undertow.*;
 import io.undertow.attribute.*;
 import io.undertow.server.*;
@@ -13,6 +13,7 @@ import io.undertow.server.handlers.encoding.*;
 import io.undertow.server.session.*;
 import io.undertow.servlet.*;
 import io.undertow.servlet.api.*;
+import lombok.extern.java.Log;
 import org.xnio.*;
 
 import javax.net.ssl.*;
@@ -25,15 +26,14 @@ import java.security.cert.*;
 import java.util.*;
 import java.util.logging.*;
 
-import static com.guicedee.guicedinjection.json.StaticStrings.*;
+
 import static io.undertow.Handlers.*;
 import static io.undertow.servlet.Servlets.*;
 
 @SuppressWarnings({"rawtypes", "unused"})
+@Log
 public class GuicedUndertow
 {
-	private static final Logger log = LogFactory.getLog("Guiced Undertow");
-	
 	private String serverKeystore;
 	private char[] storePassword;
 	
@@ -124,7 +124,7 @@ public class GuicedUndertow
 		sslContext = createSSLContext(sslKeystore, trustKeystore, storePassword);
 		
 		log.fine("Setting XNIO Provider : " + Xnio.getInstance()
-		                                          .getName());
+						.getName());
 		if (http2)
 		{
 			server.setServerOption(UndertowOptions.ENABLE_HTTP2, true);
@@ -134,29 +134,27 @@ public class GuicedUndertow
 		if (ssl)
 		{
 			server.addHttpsListener(port, host, sslContext);
-		}
-		else
+		} else
 		{
 			server.addHttpListener(port, host);
 		}
 		
 		DeploymentInfo deploymentInfo = deployment().setClassLoader(GuicedUndertow.class.getClassLoader())
-		                                            .setContextPath(STRING_FORWARD_SLASH)
-		                                            .setDeploymentName(host + "-" + port + ".war");
+						.setContextPath("/")
+						.setDeploymentName(host + "-" + port + ".war");
 		
-		java.util.Set<UndertowDeploymentConfigurator> confs = IDefaultService.loaderToSetNoInjection(ServiceLoader.load(UndertowDeploymentConfigurator.class));
+		java.util.Set<UndertowDeploymentConfigurator> confs = GuiceContext.instance().loaderToSetNoInjection(ServiceLoader.load(UndertowDeploymentConfigurator.class));
 		for (UndertowDeploymentConfigurator config : confs)
 		{
 			deploymentInfo = config.configure(deploymentInfo);
 		}
 		
 		DeploymentManager manager = Servlets.defaultContainer()
-		                                    .addDeployment(deploymentInfo);
+						.addDeployment(deploymentInfo);
 		try
 		{
 			GuiceContext.inject();
-		}
-		catch (Throwable T)
+		} catch (Throwable T)
 		{
 			log.log(Level.SEVERE, "Unable to start injections", T);
 		}
@@ -164,34 +162,33 @@ public class GuicedUndertow
 		
 		HttpHandler guicedHandler = manager.start();
 		HttpHandler encodingHandler = new EncodingHandler.Builder().build(null)
-		                                                           .wrap(guicedHandler);
+						.wrap(guicedHandler);
 		
 		HttpHandler ph = null;
 		if (GuicedUndertowWebSocketConfiguration.getWebSocketHandler() != null)
 		{
 			ph = path().addPrefixPath("/wssocket", GuicedUndertowWebSocketConfiguration.getWebSocketHandler())
-			           .addPrefixPath(STRING_FORWARD_SLASH, encodingHandler)
+							.addPrefixPath("/", encodingHandler)
 			;
-		}
-		else
+		} else
 		{
-			Set<UndertowPathHandler> pathHandlers = IDefaultService.loaderToSetNoInjection(ServiceLoader.load(UndertowPathHandler.class));
+			Set<UndertowPathHandler> pathHandlers = GuiceContext.instance().loaderToSetNoInjection(ServiceLoader.load(UndertowPathHandler.class));
 			for (UndertowPathHandler pathHandler : pathHandlers)
 			{
 				ph = pathHandler.registerPathHandler(ph);
-				ph = path(ph).addPrefixPath(STRING_FORWARD_SLASH, encodingHandler);
+				ph = path(ph).addPrefixPath("/", encodingHandler);
 			}
 		}
 		
 		
 		server.setHandler(new SessionAttachmentHandler(new LearningPushHandler(100, -1,
-						Handlers.header(ph, "x-undertow-transport", ExchangeAttributes.transportProtocol())),
-						new InMemorySessionManager("sessionManager"),
-						new SessionCookieConfig().setSecure(true)
-						                         .setHttpOnly(true)
-						                         .setDiscard(true)
-						                         .setMaxAge(1)
-				)
+										Handlers.header(ph, "x-undertow-transport", ExchangeAttributes.transportProtocol())),
+										new InMemorySessionManager("sessionManager"),
+										new SessionCookieConfig().setSecure(true)
+														.setHttpOnly(true)
+														.setDiscard(true)
+														.setMaxAge(1)
+						)
 		);
 		
 		Undertow u = server.build();
@@ -240,8 +237,7 @@ public class GuicedUndertow
 			}
 			KeyManager[] keys = new KeyManager[]{new FilteredKeyManager((X509KeyManager) keyManagerFactory.getKeyManagers()[0], xCert, sslKeyName)};
 			sslContext.init(keys, trustManagerFactory.getTrustManagers(), new SecureRandom());
-		}
-		else
+		} else
 		{
 			sslContext.init(keyManagers, trustManagers, null);
 		}
@@ -256,8 +252,7 @@ public class GuicedUndertow
 		if (storeLoc == null)
 		{
 			stream = referencePath.getResourceAsStream(name);
-		}
-		else
+		} else
 		{
 			stream = Files.newInputStream(Paths.get(storeLoc));
 		}

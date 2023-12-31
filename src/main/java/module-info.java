@@ -10,6 +10,8 @@ module com.guicedee.guicedservlets.undertow {
 	requires transitive undertow.core;
 	requires transitive undertow.servlet;
 	
+	requires static lombok;
+	
 	requires undertow.websockets.jsr;
 	
 	requires transitive jakarta.validation;

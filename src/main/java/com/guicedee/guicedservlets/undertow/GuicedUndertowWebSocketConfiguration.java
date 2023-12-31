@@ -1,27 +1,27 @@
 package com.guicedee.guicedservlets.undertow;
 
 import com.guicedee.guicedservlets.websockets.GuicedWebSocket;
-import com.guicedee.logger.LogFactory;
 import com.guicedee.guicedservlets.websockets.services.IWebSocketPreConfiguration;
 import io.undertow.server.HttpHandler;
 import io.undertow.servlet.Servlets;
 import io.undertow.servlet.api.DeploymentInfo;
 import io.undertow.servlet.api.DeploymentManager;
 import io.undertow.websockets.jsr.WebSocketDeploymentInfo;
+import lombok.extern.java.Log;
 import org.xnio.OptionMap;
 import org.xnio.Xnio;
 import org.xnio.XnioWorker;
 
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import static io.undertow.servlet.Servlets.*;
-import static io.undertow.websockets.jsr.WebSocketDeploymentInfo.*;
+import static io.undertow.servlet.Servlets.deployment;
+import static io.undertow.websockets.jsr.WebSocketDeploymentInfo.ATTRIBUTE_NAME;
 
+@Log
 public class GuicedUndertowWebSocketConfiguration
 		implements IWebSocketPreConfiguration<GuicedUndertowWebSocketConfiguration>
 {
-	private static final Logger log = LogFactory.getLog("UndertowWebSockets");
+
 	private static WebSocketDeploymentInfo webSocketDeploymentInfo;
 	private static HttpHandler webSocketHandler;
 
