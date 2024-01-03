@@ -2,6 +2,8 @@ package com.guicedee.guicedservlets.undertow;
 
 import com.google.common.base.*;
 import com.guicedee.guicedinjection.*;
+import com.guicedee.guicedinjection.interfaces.IDefaultService;
+import com.guicedee.guicedinjection.interfaces.IGuicePreDestroy;
 import com.guicedee.guicedservlets.undertow.services.*;
 //import com.guicedee.guicedservlets.websockets.implementations.GuicedUndertowWebSocketConfiguration;
 import io.undertow.*;
@@ -12,6 +14,7 @@ import io.undertow.server.handlers.encoding.*;
 import io.undertow.server.session.*;
 import io.undertow.servlet.*;
 import io.undertow.servlet.api.*;
+import jakarta.inject.Singleton;
 import lombok.extern.java.Log;
 import org.xnio.*;
 
@@ -31,7 +34,7 @@ import static io.undertow.servlet.Servlets.*;
 
 @SuppressWarnings({"rawtypes", "unused"})
 @Log
-public class GuicedUndertow
+public class GuicedUndertow implements IGuicePreDestroy
 {
 	private String serverKeystore;
 	private char[] storePassword;
@@ -53,22 +56,27 @@ public class GuicedUndertow
 	
 	private Undertow.Builder server = Undertow.builder();
 	
+	private Undertow undertow;
+	
+	public GuicedUndertow()
+	{
+		//no config
+	}
 	
 	public static Undertow boot(String host, int port, boolean ssl, KeyStore serverKeystore, KeyStore serverTruststore, String sslKey, char[] sslPassword, Class referenceClass,
 	                            boolean http2) throws Exception
 	{
-		GuicedUndertow undertow = new GuicedUndertow();
-		undertow.host = host;
-		undertow.port = port;
-		undertow.ssl = ssl;
-		undertow.sslKeyLocation = sslKey;
-		undertow.storePassword = sslPassword;
-		undertow.sslStoreReferenceClass = referenceClass;
-		undertow.http2 = http2;
-		undertow.sslKeystore = serverKeystore;
-		undertow.trustKeystore = serverTruststore;
-		
-		return undertow.bootMe();
+		GuicedUndertow guicedUndertow = new GuicedUndertow();
+		guicedUndertow.host = host;
+		guicedUndertow.port = port;
+		guicedUndertow.ssl = ssl;
+		guicedUndertow.sslKeyLocation = sslKey;
+		guicedUndertow.storePassword = sslPassword;
+		guicedUndertow.sslStoreReferenceClass = referenceClass;
+		guicedUndertow.http2 = http2;
+		guicedUndertow.sslKeystore = serverKeystore;
+		guicedUndertow.trustKeystore = serverTruststore;
+		return guicedUndertow.bootMe();
 	}
 	
 	@SuppressWarnings("UnusedReturnValue")
@@ -104,7 +112,6 @@ public class GuicedUndertow
 		undertow.serverKeystore = serverKeystoreSystemPropertyName;
 		undertow.serverTruststoreLocation = serverTruststoreSystemPropertyName;
 		undertow.sslKeyName = sslAliasName;
-		
 		return undertow.bootMe();
 	}
 	
@@ -187,10 +194,21 @@ public class GuicedUndertow
 						)
 		);
 		
-		Undertow u = server.build();
-		u.start();
-		return u;
+		undertow = server.build();
+		undertow.start();
+		return undertow;
 	}
+	
+	
+	@Override
+	public void onDestroy()
+	{
+		if (undertow != null)
+		{
+			undertow.stop();
+		}
+	}
+	
 	
 	private SSLContext createSSLContext(KeyStore keyStore, KeyStore trustStore, char[] password) throws Exception
 	{
@@ -407,7 +425,7 @@ public class GuicedUndertow
 		this.sslKeyName = sslKeyName;
 		return this;
 	}
-	
+
 	/**
 	 * filters the SSLCertificate we want to use for SSL <code>
 	 * KeyManagerFactory kmf = KeyManagerFactory.getInstance("X509");
@@ -470,5 +488,17 @@ public class GuicedUndertow
 		{
 			return originatingKeyManager.getPrivateKey(alias);
 		}
+	}
+	
+	@Override
+	public int compareTo(Object o)
+	{
+		return 0;
+	}
+	
+	@Override
+	public int compare(Object o1, Object o2)
+	{
+		return 0;
 	}
 }

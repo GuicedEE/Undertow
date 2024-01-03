@@ -1,3 +1,4 @@
+import com.guicedee.guicedinjection.interfaces.IGuicePreDestroy;
 import com.guicedee.guicedservlets.undertow.*;
 import com.guicedee.guicedservlets.undertow.services.*;
 
@@ -26,6 +27,7 @@ module com.guicedee.guicedservlets.undertow {
 	
 	provides io.undertow.servlet.ServletExtension with com.guicedee.guicedservlets.undertow.UndertowGuicedHandlerExtension;
 	
+	provides IGuicePreDestroy with GuicedUndertow;
 	
 	provides com.guicedee.guicedservlets.undertow.services.UndertowDeploymentConfigurator with GuicedServletListenersRegister;
 	
