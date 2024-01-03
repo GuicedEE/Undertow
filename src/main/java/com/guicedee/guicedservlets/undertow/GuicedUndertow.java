@@ -1,10 +1,9 @@
 package com.guicedee.guicedservlets.undertow;
 
 import com.google.common.base.*;
-import com.google.inject.Guice;
 import com.guicedee.guicedinjection.*;
-import com.guicedee.guicedinjection.interfaces.*;
 import com.guicedee.guicedservlets.undertow.services.*;
+//import com.guicedee.guicedservlets.websockets.implementations.GuicedUndertowWebSocketConfiguration;
 import io.undertow.*;
 import io.undertow.attribute.*;
 import io.undertow.server.*;
@@ -165,21 +164,18 @@ public class GuicedUndertow
 						.wrap(guicedHandler);
 		
 		HttpHandler ph = null;
-		if (GuicedUndertowWebSocketConfiguration.getWebSocketHandler() != null)
-		{
-			ph = path().addPrefixPath("/wssocket", GuicedUndertowWebSocketConfiguration.getWebSocketHandler())
-							.addPrefixPath("/", encodingHandler)
-			;
-		} else
-		{
-			Set<UndertowPathHandler> pathHandlers = GuiceContext.instance().loaderToSetNoInjection(ServiceLoader.load(UndertowPathHandler.class));
-			for (UndertowPathHandler pathHandler : pathHandlers)
-			{
-				ph = pathHandler.registerPathHandler(ph);
-				ph = path(ph).addPrefixPath("/", encodingHandler);
-			}
-		}
 		
+		Set<UndertowPathHandler> pathHandlers = GuiceContext.instance().loaderToSetNoInjection(ServiceLoader.load(UndertowPathHandler.class));
+		for (UndertowPathHandler pathHandler : pathHandlers)
+		{
+			ph = pathHandler.registerPathHandler(ph);
+		}
+		ph = path(ph).addPrefixPath("/", encodingHandler);
+		
+		if (ph == null)
+		{
+			log.warning("No Path Handlers have been configured, ");
+		}
 		
 		server.setHandler(new SessionAttachmentHandler(new LearningPushHandler(100, -1,
 										Handlers.header(ph, "x-undertow-transport", ExchangeAttributes.transportProtocol())),

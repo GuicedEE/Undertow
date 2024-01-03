@@ -1,1 +1,1 @@
-com.guicedee.guicedservlets.undertow.GuicedUndertowWebSocketConfiguration
+com.guicedee.guicedservlets.websockets.implementations.GuicedUndertowWebSocketConfiguration

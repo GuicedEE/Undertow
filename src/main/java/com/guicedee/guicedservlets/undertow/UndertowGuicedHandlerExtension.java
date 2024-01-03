@@ -32,15 +32,13 @@ import jakarta.servlet.DispatcherType;
 import jakarta.servlet.ServletContext;
 import lombok.extern.java.Log;
 
-import java.util.logging.Logger;
-
-import static io.undertow.websockets.jsr.WebSocketDeploymentInfo.*;
-
 @SuppressWarnings("unused")
 @Log
 public class UndertowGuicedHandlerExtension
 				implements ServletExtension
 {
+	public static final String ATTRIBUTE_NAME = "io.undertow.websockets.jsr.WebSocketDeploymentInfo";
+	
 	public UndertowGuicedHandlerExtension()
 	{
 		//No config required

@@ -30,8 +30,13 @@
         </dependency>
 
         <dependency>
+            <groupId>com.guicedee.servlets</groupId>
+            <artifactId>guiced-servlets</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>com.guicedee.services</groupId>
-            <artifactId>undertow-websockets-jsr</artifactId>
+            <artifactId>undertow-servlet</artifactId>
         </dependency>
 
         <dependency>
@@ -39,10 +44,10 @@
             <artifactId>guice-servlet</artifactId>
         </dependency>
 
-        <dependency>
+ <!--       <dependency>
             <groupId>com.guicedee.servlets</groupId>
             <artifactId>guiced-websockets</artifactId>
-        </dependency>
+        </dependency>-->
 
         <dependency>
             <groupId>com.guicedee.services</groupId>
@@ -79,6 +84,7 @@
             <artifactId>junit-jupiter-api</artifactId>
             <scope>test</scope>
         </dependency>
+
     </dependencies>
 
 
