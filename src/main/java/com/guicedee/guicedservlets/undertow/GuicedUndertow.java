@@ -167,22 +167,23 @@ public class GuicedUndertow implements IGuicePreDestroy
 		manager.deploy();
 		
 		HttpHandler guicedHandler = manager.start();
+		
+		Map<String, HttpHandler> handlers = new LinkedHashMap<>();
+		
 		HttpHandler encodingHandler = new EncodingHandler.Builder().build(null)
 						.wrap(guicedHandler);
 		
-		HttpHandler ph = null;
+		final PathHandler ph = path();
 		
 		Set<UndertowPathHandler> pathHandlers = GuiceContext.instance().loaderToSetNoInjection(ServiceLoader.load(UndertowPathHandler.class));
 		for (UndertowPathHandler pathHandler : pathHandlers)
 		{
-			ph = pathHandler.registerPathHandler(ph);
+			handlers.putAll(pathHandler.registerPathHandler());
 		}
-		ph = path(ph).addPrefixPath("/", encodingHandler);
-		
-		if (ph == null)
-		{
-			log.warning("No Path Handlers have been configured, ");
-		}
+		handlers.put("/", encodingHandler);
+		handlers.forEach((path,handler)->{
+			ph.addPrefixPath(path,handler);
+		});
 		
 		server.setHandler(new SessionAttachmentHandler(new LearningPushHandler(100, -1,
 										Handlers.header(ph, "x-undertow-transport", ExchangeAttributes.transportProtocol())),
