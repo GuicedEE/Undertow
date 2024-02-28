@@ -1,7 +1,7 @@
 package com.guicedee.guicedservlets.undertow;
 
 import com.google.common.base.*;
-import com.guicedee.guicedinjection.*;
+import com.guicedee.client.*;
 import com.guicedee.guicedinjection.interfaces.IDefaultService;
 import com.guicedee.guicedinjection.interfaces.IGuicePreDestroy;
 import com.guicedee.guicedservlets.undertow.services.*;
@@ -149,7 +149,7 @@ public class GuicedUndertow implements IGuicePreDestroy
 						.setContextPath("/")
 						.setDeploymentName(host + "-" + port + ".war");
 		
-		java.util.Set<UndertowDeploymentConfigurator> confs = GuiceContext.instance().loaderToSetNoInjection(ServiceLoader.load(UndertowDeploymentConfigurator.class));
+		java.util.Set<UndertowDeploymentConfigurator> confs = IGuiceContext.loaderToSetNoInjection(ServiceLoader.load(UndertowDeploymentConfigurator.class));
 		for (UndertowDeploymentConfigurator config : confs)
 		{
 			deploymentInfo = config.configure(deploymentInfo);
@@ -159,7 +159,7 @@ public class GuicedUndertow implements IGuicePreDestroy
 						.addDeployment(deploymentInfo);
 		try
 		{
-			GuiceContext.inject();
+			IGuiceContext.getContext().inject();
 		} catch (Throwable T)
 		{
 			log.log(Level.SEVERE, "Unable to start injections", T);
@@ -175,7 +175,7 @@ public class GuicedUndertow implements IGuicePreDestroy
 		
 		final PathHandler ph = path();
 		
-		Set<UndertowPathHandler> pathHandlers = GuiceContext.instance().loaderToSetNoInjection(ServiceLoader.load(UndertowPathHandler.class));
+		Set<UndertowPathHandler> pathHandlers = IGuiceContext.loaderToSetNoInjection(ServiceLoader.load(UndertowPathHandler.class));
 		for (UndertowPathHandler pathHandler : pathHandlers)
 		{
 			handlers.putAll(pathHandler.registerPathHandler());

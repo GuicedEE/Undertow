@@ -1,7 +1,6 @@
 package com.guicedee.guicedservlets.undertow;
 
-import com.guicedee.guicedinjection.*;
-
+import com.guicedee.client.*;
 import io.github.classgraph.*;
 import io.undertow.server.handlers.resource.Resource;
 import io.undertow.server.handlers.resource.*;
@@ -16,8 +15,7 @@ import java.util.regex.*;
 
 @SuppressWarnings("unused")
 @Log
-public class GuicedUndertowResourceManager
-		extends ClassPathResourceManager
+public class GuicedUndertowResourceManager extends ClassPathResourceManager
 {
 	
 	private static final Set<String> rejectListCriteria = new HashSet<>();
@@ -38,15 +36,16 @@ public class GuicedUndertowResourceManager
 	
 	private ScanResult getScanResult()
 	{
-		return GuiceContext.instance()
-		                   .getScanResult();
+		return IGuiceContext
+				       .getContext()
+				       .getScanResult();
 	}
 	
 	public GuicedUndertowResourceManager(ClassLoader loader, Package p)
 	{
 		super(loader, p);
 		this.loader = loader;
-			resourceManager = new ClassPathResourceManager(loader, "META-INF/resources/");
+		resourceManager = new ClassPathResourceManager(loader, "META-INF/resources/");
 		
 	}
 	
@@ -54,7 +53,7 @@ public class GuicedUndertowResourceManager
 	{
 		super(classLoader, prefix);
 		this.loader = classLoader;
-			resourceManager = new ClassPathResourceManager(loader, "META-INF/resources/");
+		resourceManager = new ClassPathResourceManager(loader, "META-INF/resources/");
 		
 	}
 	
@@ -62,7 +61,7 @@ public class GuicedUndertowResourceManager
 	{
 		super(classLoader, "/");
 		this.loader = classLoader;
-			resourceManager = new ClassPathResourceManager(loader, "META-INF/resources/");
+		resourceManager = new ClassPathResourceManager(loader, "META-INF/resources/");
 	}
 	
 	public static void setPathManager(ResourceManager pathManager)

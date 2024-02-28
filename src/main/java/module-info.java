@@ -15,13 +15,10 @@ module com.guicedee.guicedservlets.undertow {
 	
 	requires static lombok;
 	
-
-	
 	requires transitive jakarta.validation;
 	requires static jakarta.servlet;
 	//requires static jakarta.persistence;
 	requires static jakarta.xml.bind;
-	requires com.guicedee.guicedinjection;
 	
 	//	requires jdk.unsupported;
 	

@@ -17,7 +17,7 @@
 
 package com.guicedee.guicedservlets.undertow;
 
-import com.guicedee.guicedinjection.GuiceContext;
+import com.guicedee.client.*;
 import com.guicedee.guicedservlets.GuicedFilter;
 import com.guicedee.guicedservlets.GuicedServletContextListener;
 import com.guicedee.guicedservlets.GuicedServletSessionManager;
@@ -54,9 +54,9 @@ public class UndertowGuicedHandlerExtension
 		{
 			UndertowGuicedHandlerExtension.log.fine("Registering Guice Filter in Undertow");
 			
-			InstanceFactory guicedContextInstanceFactory = new ImmediateInstanceFactory<>(GuiceContext.get(GuicedServletContextListener.class));
-			InstanceFactory guiceInstanceFactory = new ImmediateInstanceFactory<>(GuiceContext.get(GuicedServletSessionManager.class));
-			InstanceFactory guiceFilterFactory = new ImmediateInstanceFactory<>(GuiceContext.get(GuicedFilter.class));
+			InstanceFactory guicedContextInstanceFactory = new ImmediateInstanceFactory<>(IGuiceContext.get(GuicedServletContextListener.class));
+			InstanceFactory guiceInstanceFactory = new ImmediateInstanceFactory<>(IGuiceContext.get(GuicedServletSessionManager.class));
+			InstanceFactory guiceFilterFactory = new ImmediateInstanceFactory<>(IGuiceContext.get(GuicedFilter.class));
 			
 			deploymentInfo.addFilter(new FilterInfo("GuiceUndertowFilter", GuicedFilter.class, guiceFilterFactory).setAsyncSupported(true));
 			deploymentInfo.addFilterUrlMapping("GuiceUndertowFilter", "/*", DispatcherType.REQUEST);
