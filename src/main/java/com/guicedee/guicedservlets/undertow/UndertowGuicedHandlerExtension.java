@@ -17,11 +17,10 @@
 
 package com.guicedee.guicedservlets.undertow;
 
-import com.guicedee.guicedinjection.GuiceContext;
+import com.guicedee.client.*;
 import com.guicedee.guicedservlets.GuicedFilter;
 import com.guicedee.guicedservlets.GuicedServletContextListener;
 import com.guicedee.guicedservlets.GuicedServletSessionManager;
-import com.guicedee.logger.LogFactory;
 import io.undertow.servlet.ServletExtension;
 import io.undertow.servlet.api.DeploymentInfo;
 import io.undertow.servlet.api.FilterInfo;
@@ -31,49 +30,45 @@ import io.undertow.servlet.util.ImmediateInstanceFactory;
 
 import jakarta.servlet.DispatcherType;
 import jakarta.servlet.ServletContext;
-import java.util.logging.Logger;
-
-import static io.undertow.websockets.jsr.WebSocketDeploymentInfo.*;
+import lombok.extern.java.Log;
 
 @SuppressWarnings("unused")
+@Log
 public class UndertowGuicedHandlerExtension
-		implements ServletExtension
+				implements ServletExtension
 {
-	private static final Logger log = LogFactory.getLog("GuicedUndertow");
-
+	public static final String ATTRIBUTE_NAME = "io.undertow.websockets.jsr.WebSocketDeploymentInfo";
+	
 	public UndertowGuicedHandlerExtension()
 	{
 		//No config required
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	public void handleDeployment(DeploymentInfo deploymentInfo, ServletContext servletContext)
 	{
 		ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-
+		
 		if (servletContext.getAttribute(ATTRIBUTE_NAME) == null)
 		{
 			UndertowGuicedHandlerExtension.log.fine("Registering Guice Filter in Undertow");
-
-			InstanceFactory guicedContextInstanceFactory = new ImmediateInstanceFactory<>(GuiceContext.get(GuicedServletContextListener.class));
-			InstanceFactory guiceInstanceFactory = new ImmediateInstanceFactory<>(GuiceContext.get(GuicedServletSessionManager.class));
-			InstanceFactory guiceFilterFactory = new ImmediateInstanceFactory<>(GuiceContext.get(GuicedFilter.class));
-
+			
+			InstanceFactory guicedContextInstanceFactory = new ImmediateInstanceFactory<>(IGuiceContext.get(GuicedServletContextListener.class));
+			InstanceFactory guiceInstanceFactory = new ImmediateInstanceFactory<>(IGuiceContext.get(GuicedServletSessionManager.class));
+			InstanceFactory guiceFilterFactory = new ImmediateInstanceFactory<>(IGuiceContext.get(GuicedFilter.class));
+			
 			deploymentInfo.addFilter(new FilterInfo("GuiceUndertowFilter", GuicedFilter.class, guiceFilterFactory).setAsyncSupported(true));
 			deploymentInfo.addFilterUrlMapping("GuiceUndertowFilter", "/*", DispatcherType.REQUEST);
-
+			
 			deploymentInfo.addListener(new ListenerInfo(GuicedServletContextListener.class, guicedContextInstanceFactory));
 			deploymentInfo.addListener(new ListenerInfo(GuicedServletSessionManager.class, guiceInstanceFactory));
-		}
-		else
+		} else
 		{
 			UndertowGuicedHandlerExtension.log.fine("Requested to configure guice for web sockets - skipped. - " + deploymentInfo.getDeploymentName());
 		}
-
+		
 		UndertowGuicedHandlerExtension.log.config("Configuring Resources to be found by GuicedUndertowResourceManager");
-		
-		
 		deploymentInfo.setResourceManager(new GuicedUndertowResourceManager(classLoader));
 		UndertowGuicedHandlerExtension.log.fine("Undertow Configured");
 	}

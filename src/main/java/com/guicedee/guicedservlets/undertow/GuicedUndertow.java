@@ -1,10 +1,11 @@
 package com.guicedee.guicedservlets.undertow;
 
 import com.google.common.base.*;
-import com.guicedee.guicedinjection.*;
-import com.guicedee.guicedinjection.interfaces.*;
+import com.guicedee.client.*;
+import com.guicedee.guicedinjection.interfaces.IDefaultService;
+import com.guicedee.guicedinjection.interfaces.IGuicePreDestroy;
 import com.guicedee.guicedservlets.undertow.services.*;
-import com.guicedee.logger.*;
+//import com.guicedee.guicedservlets.websockets.implementations.GuicedUndertowWebSocketConfiguration;
 import io.undertow.*;
 import io.undertow.attribute.*;
 import io.undertow.server.*;
@@ -13,6 +14,8 @@ import io.undertow.server.handlers.encoding.*;
 import io.undertow.server.session.*;
 import io.undertow.servlet.*;
 import io.undertow.servlet.api.*;
+import jakarta.inject.Singleton;
+import lombok.extern.java.Log;
 import org.xnio.*;
 
 import javax.net.ssl.*;
@@ -25,15 +28,14 @@ import java.security.cert.*;
 import java.util.*;
 import java.util.logging.*;
 
-import static com.guicedee.guicedinjection.json.StaticStrings.*;
+
 import static io.undertow.Handlers.*;
 import static io.undertow.servlet.Servlets.*;
 
 @SuppressWarnings({"rawtypes", "unused"})
-public class GuicedUndertow
+@Log
+public class GuicedUndertow implements IGuicePreDestroy
 {
-	private static final Logger log = LogFactory.getLog("Guiced Undertow");
-	
 	private String serverKeystore;
 	private char[] storePassword;
 	
@@ -54,22 +56,27 @@ public class GuicedUndertow
 	
 	private Undertow.Builder server = Undertow.builder();
 	
+	private Undertow undertow;
+	
+	public GuicedUndertow()
+	{
+		//no config
+	}
 	
 	public static Undertow boot(String host, int port, boolean ssl, KeyStore serverKeystore, KeyStore serverTruststore, String sslKey, char[] sslPassword, Class referenceClass,
 	                            boolean http2) throws Exception
 	{
-		GuicedUndertow undertow = new GuicedUndertow();
-		undertow.host = host;
-		undertow.port = port;
-		undertow.ssl = ssl;
-		undertow.sslKeyLocation = sslKey;
-		undertow.storePassword = sslPassword;
-		undertow.sslStoreReferenceClass = referenceClass;
-		undertow.http2 = http2;
-		undertow.sslKeystore = serverKeystore;
-		undertow.trustKeystore = serverTruststore;
-		
-		return undertow.bootMe();
+		GuicedUndertow guicedUndertow = new GuicedUndertow();
+		guicedUndertow.host = host;
+		guicedUndertow.port = port;
+		guicedUndertow.ssl = ssl;
+		guicedUndertow.sslKeyLocation = sslKey;
+		guicedUndertow.storePassword = sslPassword;
+		guicedUndertow.sslStoreReferenceClass = referenceClass;
+		guicedUndertow.http2 = http2;
+		guicedUndertow.sslKeystore = serverKeystore;
+		guicedUndertow.trustKeystore = serverTruststore;
+		return guicedUndertow.bootMe();
 	}
 	
 	@SuppressWarnings("UnusedReturnValue")
@@ -105,7 +112,6 @@ public class GuicedUndertow
 		undertow.serverKeystore = serverKeystoreSystemPropertyName;
 		undertow.serverTruststoreLocation = serverTruststoreSystemPropertyName;
 		undertow.sslKeyName = sslAliasName;
-		
 		return undertow.bootMe();
 	}
 	
@@ -124,7 +130,7 @@ public class GuicedUndertow
 		sslContext = createSSLContext(sslKeystore, trustKeystore, storePassword);
 		
 		log.fine("Setting XNIO Provider : " + Xnio.getInstance()
-		                                          .getName());
+						.getName());
 		if (http2)
 		{
 			server.setServerOption(UndertowOptions.ENABLE_HTTP2, true);
@@ -134,70 +140,76 @@ public class GuicedUndertow
 		if (ssl)
 		{
 			server.addHttpsListener(port, host, sslContext);
-		}
-		else
+		} else
 		{
 			server.addHttpListener(port, host);
 		}
 		
 		DeploymentInfo deploymentInfo = deployment().setClassLoader(GuicedUndertow.class.getClassLoader())
-		                                            .setContextPath(STRING_FORWARD_SLASH)
-		                                            .setDeploymentName(host + "-" + port + ".war");
+						.setContextPath("/")
+						.setDeploymentName(host + "-" + port + ".war");
 		
-		java.util.Set<UndertowDeploymentConfigurator> confs = IDefaultService.loaderToSetNoInjection(ServiceLoader.load(UndertowDeploymentConfigurator.class));
+		java.util.Set<UndertowDeploymentConfigurator> confs = IGuiceContext.loaderToSetNoInjection(ServiceLoader.load(UndertowDeploymentConfigurator.class));
 		for (UndertowDeploymentConfigurator config : confs)
 		{
 			deploymentInfo = config.configure(deploymentInfo);
 		}
 		
 		DeploymentManager manager = Servlets.defaultContainer()
-		                                    .addDeployment(deploymentInfo);
+						.addDeployment(deploymentInfo);
 		try
 		{
-			GuiceContext.inject();
-		}
-		catch (Throwable T)
+			IGuiceContext.getContext().inject();
+		} catch (Throwable T)
 		{
 			log.log(Level.SEVERE, "Unable to start injections", T);
 		}
 		manager.deploy();
 		
 		HttpHandler guicedHandler = manager.start();
+		
+		Map<String, HttpHandler> handlers = new LinkedHashMap<>();
+		
 		HttpHandler encodingHandler = new EncodingHandler.Builder().build(null)
-		                                                           .wrap(guicedHandler);
+						.wrap(guicedHandler);
 		
-		HttpHandler ph = null;
-		if (GuicedUndertowWebSocketConfiguration.getWebSocketHandler() != null)
-		{
-			ph = path().addPrefixPath("/wssocket", GuicedUndertowWebSocketConfiguration.getWebSocketHandler())
-			           .addPrefixPath(STRING_FORWARD_SLASH, encodingHandler)
-			;
-		}
-		else
-		{
-			Set<UndertowPathHandler> pathHandlers = IDefaultService.loaderToSetNoInjection(ServiceLoader.load(UndertowPathHandler.class));
-			for (UndertowPathHandler pathHandler : pathHandlers)
-			{
-				ph = pathHandler.registerPathHandler(ph);
-				ph = path(ph).addPrefixPath(STRING_FORWARD_SLASH, encodingHandler);
-			}
-		}
+		final PathHandler ph = path();
 		
+		Set<UndertowPathHandler> pathHandlers = IGuiceContext.loaderToSetNoInjection(ServiceLoader.load(UndertowPathHandler.class));
+		for (UndertowPathHandler pathHandler : pathHandlers)
+		{
+			handlers.putAll(pathHandler.registerPathHandler());
+		}
+		handlers.put("/", encodingHandler);
+		handlers.forEach((path,handler)->{
+			ph.addPrefixPath(path,handler);
+		});
 		
 		server.setHandler(new SessionAttachmentHandler(new LearningPushHandler(100, -1,
-						Handlers.header(ph, "x-undertow-transport", ExchangeAttributes.transportProtocol())),
-						new InMemorySessionManager("sessionManager"),
-						new SessionCookieConfig().setSecure(true)
-						                         .setHttpOnly(true)
-						                         .setDiscard(true)
-						                         .setMaxAge(1)
-				)
+										Handlers.header(ph, "x-undertow-transport", ExchangeAttributes.transportProtocol())),
+										new InMemorySessionManager("sessionManager"),
+										new SessionCookieConfig().setSecure(true)
+														.setHttpOnly(true)
+														.setDiscard(true)
+														.setMaxAge(1)
+						)
 		);
 		
-		Undertow u = server.build();
-		u.start();
-		return u;
+		undertow = server.build();
+		undertow.start();
+		return undertow;
 	}
+	
+	
+	@Override
+	public void onDestroy()
+	{
+		if (undertow != null)
+		{
+			undertow.stop();
+		}
+	}
+	
 	
 	private SSLContext createSSLContext(KeyStore keyStore, KeyStore trustStore, char[] password) throws Exception
 	{
@@ -240,8 +252,7 @@ public class GuicedUndertow
 			}
 			KeyManager[] keys = new KeyManager[]{new FilteredKeyManager((X509KeyManager) keyManagerFactory.getKeyManagers()[0], xCert, sslKeyName)};
 			sslContext.init(keys, trustManagerFactory.getTrustManagers(), new SecureRandom());
-		}
-		else
+		} else
 		{
 			sslContext.init(keyManagers, trustManagers, null);
 		}
@@ -256,8 +267,7 @@ public class GuicedUndertow
 		if (storeLoc == null)
 		{
 			stream = referencePath.getResourceAsStream(name);
-		}
-		else
+		} else
 		{
 			stream = Files.newInputStream(Paths.get(storeLoc));
 		}
@@ -416,7 +426,7 @@ public class GuicedUndertow
 		this.sslKeyName = sslKeyName;
 		return this;
 	}
-	
+
 	/**
 	 * filters the SSLCertificate we want to use for SSL <code>
 	 * KeyManagerFactory kmf = KeyManagerFactory.getInstance("X509");
@@ -479,5 +489,17 @@ public class GuicedUndertow
 		{
 			return originatingKeyManager.getPrivateKey(alias);
 		}
+	}
+	
+	@Override
+	public int compareTo(Object o)
+	{
+		return 0;
+	}
+	
+	@Override
+	public int compare(Object o1, Object o2)
+	{
+		return 0;
 	}
 }
