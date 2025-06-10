@@ -14,7 +14,7 @@ import io.undertow.server.handlers.encoding.*;
 import io.undertow.server.session.*;
 import io.undertow.servlet.*;
 import io.undertow.servlet.api.*;
-import jakarta.inject.Singleton;
+import import com.google.inject.Singleton;;
 import lombok.extern.java.Log;
 import org.xnio.*;
 
